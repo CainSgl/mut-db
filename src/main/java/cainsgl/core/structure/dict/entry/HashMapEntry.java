@@ -1,11 +1,5 @@
 package cainsgl.core.structure.dict.entry;
 
-import cainsgl.core.data.MutObj;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 @Deprecated
 public class HashMapEntry // extends HashMap<Integer,MNode> implements DictEntry
 {

@@ -4,13 +4,14 @@ import cainsgl.core.network.server.MutServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MutConfiguration
-{
+public class MutConfiguration {
+
     public static final Logger log = LoggerFactory.getLogger(MutServer.class);
     public static final Integer port=6379;
     public static final Integer backlog=128;
     public static final Integer workThreads=2;
     public static final Integer gcThreads=1;
+
     //哨兵模式
     public static final Boolean SentinelActivate=true;
     //假线程数量
@@ -21,6 +22,23 @@ public class MutConfiguration
     public static final float MAX_Load_Factor=0.75f;
     //设置hashtable的负载因子最小
     public static final float MIN_Load_Factor=0.1f;
-    //rehash的次数
-    public static final int rehashNum=6;
+    //一次rehash的次数
+    public static final int rehashNum = 6;
+
+    // RDB相关配置
+    public static class RDB{
+
+        // 执行RDB间隔单位时间 单位毫秒
+        public static long INTERVAL_TIME = 2000L;
+
+        // 单位时间内插入数据的次数
+        public static long INSERT_COUNT = 10L;
+
+        // 业务类型 - LOW; HIGH
+        public static String BUSINESS_TYPE = "HIGH";
+
+        // 最大延迟次数
+        public static final int MAX_DELAY_COUNT = 5;
+
+    }
 }

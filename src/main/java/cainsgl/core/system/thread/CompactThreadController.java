@@ -1,8 +1,6 @@
 package cainsgl.core.system.thread;
 
-import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.EventLoop;
-import io.netty.util.concurrent.DefaultThreadFactory;
 
 import static cainsgl.core.system.thread.ThreadManager.SERVER_WORKER_GROUP;
 
@@ -12,7 +10,7 @@ public class CompactThreadController implements ThreadController
     public CompactThreadController(int workThreads)
     {
         eventWorkerGroup=new EventLoop[workThreads];
-        for(int i=0;i<workThreads;i++)
+        for(int i = 0;i < workThreads;i++)
         {
             eventWorkerGroup[i] = SERVER_WORKER_GROUP.next();
         }

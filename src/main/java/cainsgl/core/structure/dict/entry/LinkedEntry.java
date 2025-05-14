@@ -1,9 +1,5 @@
 package cainsgl.core.structure.dict.entry;
 
-import cainsgl.core.data.MutObj;
-
-import java.util.Arrays;
-
 public class LinkedEntry //implements DictEntry
 {
 //    private Node header;

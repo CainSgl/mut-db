@@ -1,10 +1,5 @@
 package cainsgl.core.utils.adapter;
 
-import cainsgl.core.excepiton.MutDecoderException;
-
-import java.nio.charset.StandardCharsets;
-
-
 public class CommandAdapter
 {
     int dataNumber;

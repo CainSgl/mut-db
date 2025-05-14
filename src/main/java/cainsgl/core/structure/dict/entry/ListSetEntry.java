@@ -4,31 +4,20 @@ import cainsgl.core.data.MutObj;
 
 import java.util.Arrays;
 
-public class ListSetEntry extends SortedList implements DictEntry
-{
+public class ListSetEntry extends SortedList implements DictEntry {
 
-    public ListSetEntry(int c)
-    {
+    public ListSetEntry(int c) {
         super(c);
     }
 
     @Override
-    public boolean add(MNode v)
-    {
-        if (size == nodes.length)
-        {
+    public boolean add(MNode v) {
+        if (size == nodes.length) {
             reSeize();
         }
-//        List<MNode> list = new ArrayList<MNode>(nodes.length/2);
-//        List<Integer> ids=new ArrayList<>(nodes.length/2);
-        for (int i = 0; i < size; i++)
-        {
-            if (nodes[i].code == v.code)
-            {
-//                list.add(nodes[i]);
-//                ids.add(i);
-                if (nodes[i].equals(v))
-                {
+        for (int i = 0; i < size; i++) {
+            if (nodes[i].code == v.code) {
+                if (nodes[i].equals(v)) {
                     //hash冲突
                     nodes[i] = v;
                     return false;
