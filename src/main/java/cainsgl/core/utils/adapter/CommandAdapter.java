@@ -1,6 +1,8 @@
 package cainsgl.core.utils.adapter;
 
+import cainsgl.core.command.manager.Manager;
 import cainsgl.core.excepiton.MutDecoderException;
+import cainsgl.core.network.config.NetWorkConfig;
 
 import java.nio.charset.StandardCharsets;
 
@@ -232,8 +234,12 @@ public class CommandAdapter
         }
     }
 
-    public byte[] getCmd()
+    public Manager getCmd()
     {
-        return null;
+        return NetWorkConfig.getCmd(cmd);
+    }
+    public byte[][] getArgs()
+    {
+        return Args;
     }
 }

@@ -1,9 +1,13 @@
 package cainsgl;
 
+import cainsgl.core.data.ByteKey;
 import cainsgl.core.data.MutObjTest;
 import cainsgl.core.structure.BigMap;
 import cainsgl.core.structure.dict.Dict;
 import cainsgl.core.structure.dict.entry.MNode;
+import cainsgl.core.structure.dict2.AbstractDictHt;
+import cainsgl.core.structure.dict2.Dict2;
+import cainsgl.core.structure.dict2.DictHt;
 import cainsgl.core.utils.HashUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -14,76 +18,165 @@ public class TestMap
     public static byte[] getRandoByte() throws UnsupportedEncodingException
     {
         Random rand = new Random();
-        String t="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        int t2=rand.nextInt(10);
-        String s="";
-        for(int i=0;i<t2;i++)
+        String t = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        int t2 = rand.nextInt(10);
+        String s = "";
+        for (int i = 0; i < t2; i++)
         {
             int i2 = rand.nextInt(25);
-            s=s+t.substring(i2,i2+1);
+            s = s + t.substring(i2, i2 + 1);
         }
         byte[] bytes = s.getBytes("UTF-8");
-        if(bytes.length==0)
+        if (bytes.length == 0)
         {
-            return new byte[]{'a','d'};
+            return new byte[]{'a', 'd'};
         }
         return bytes;
     }
 
+
     public static void main(String[] args) throws Exception
     {
-        Dict dict=new Dict(32);
-        Map<Integer,MNode> test=new HashMap<>();
-        List<MNode> nodes=new ArrayList<>();
-        for(int i=0;i<300000;i++)
+        Map<ByteKey, Integer> Dict = new DictHt<>(4);
+        Map<ByteKey,Integer> map= new HashMap<>();
+        List<ByteKey> nodes = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
         {
             byte[] randoByte = getRandoByte();
-            MNode mNode = new MNode(randoByte, new MutObjTest(), HashUtil.fastHash(randoByte));
-            nodes.add(mNode);
+            nodes.add(new ByteKey(randoByte));
         }
 
-        long stratTime=System.currentTimeMillis();
-        System.out.println("存开始时间Map:"+stratTime);
-        for(int i=0;i<300000;i++)
+      //  Dict.put(nodes.get(0),"你好啊");
+       // List<ByteKey> t=new ArrayList<>();
+       // List<Integer> ids=new ArrayList<>();
+        for(int i = 0; i < 10; i++)
         {
-            MNode mNode = nodes.get(i);
-            //我们的也会去new一次
-            test.put(HashUtil.fastHash(mNode.key),new MNode(mNode.key,mNode.mutObj,mNode.code));
+//            if(Dict.containsKey(nodes.get(i)))
+//            {
+//                if(map.containsKey(nodes.get(i)))
+//                {
+//                    System.out.println("yes");
+//                    continue;
+//                }
+//            }
+            Integer put = Dict.put(nodes.get(i), i);
+            if(put!=null)
+            {
+                System.out.println(put);
+            }
+    //        Integer put1 = map.put(nodes.get(i), i);
+//            if(put!=put1)
+//            {
+//                if(put==null)
+//                {
+//                    System.out.println("???");
+//                }else
+//                {
+//                    if(!put.equals(put1))
+//                    {
+//                        t.add(nodes.get(i));
+//                        ids.add(i);
+//                        System.out.println("?????");
+//                    }
+//                }
+//            }
         }
-        System.out.println("结束时间Map:"+(System.currentTimeMillis()-stratTime));
-
-        stratTime=System.currentTimeMillis();
-        System.out.println("查开始时间map:"+stratTime);
-        for(int i=0;i<300000;i++)
+        int size = Dict.size();
+        System.out.println(size);
+        Iterator<Map.Entry<ByteKey, Integer>> iterator = Dict.entrySet().iterator();
+        int asdasd=0;
+        while(iterator.hasNext())
         {
-            MNode mNode = nodes.get(i);
-            test.get(HashUtil.fastHash(mNode.key));
+            asdasd++;
+            Map.Entry<ByteKey, Integer> next = iterator.next();
+            if(next==null)
+            {
+                continue;
+            }
+            ByteKey key  =next.getKey();
+            System.out.println(key);
+            iterator.remove();
         }
-        System.out.println("结束时间map:"+(System.currentTimeMillis()-stratTime));
-        System.out.println(test.size());
-        test=null;
-        System.gc();
-
-
-        stratTime=System.currentTimeMillis();
-        System.out.println("存开始时间Dict:"+stratTime);
-        for(int i=0;i<300000;i++)
+        System.out.println(Dict.size());
+       int j=0;
+//        for(int i = 0; i < 300000; i++)
+//        {
+//            ByteKey byteKey = nodes.get(i);
+//            Integer i1 = map.get(byteKey);
+//            Integer o = Dict.get(byteKey);
+//           if(!o.equals(i1))
+//           {
+//               System.out.println(o+" "+i1);
+//           }
+//        }
+        for(int i = 0; i < 300000; i++)
         {
-            MNode mNode = nodes.get(i);
-            dict.put(mNode.key,mNode.mutObj);
+//            Object o = Dict.get(new ByteKey(getRandoByte()));
+//            if(o==null)
+//            {
+//                System.err.println(i);
+//                continue;
+//            }
+//            if(o.equals(i))
+//            {
+//                continue;
+//            }
+//
+//            System.err.println(o);
         }
-        System.out.println("结束时间Dict:"+(System.currentTimeMillis()-stratTime));
 
-        stratTime=System.currentTimeMillis();
-        System.out.println("查开始时间Dict:"+stratTime);
-        for(int i=0;i<300000;i++)
-        {
-            MNode mNode = nodes.get(i);
-            dict.get(mNode.key);
-        }
-        System.out.println("结束时间Dict:"+(System.currentTimeMillis()-stratTime));
-        System.out.println(dict.size());
-      //  System.out.println(dict.size()+"   "+test.size()+"   "+nodes.size());
+    //    Object o = Dict.get(nodes.get(0));
+        return;
+//        long stratTime = System.currentTimeMillis();
+//        System.out.println("存开始时间Map:" + stratTime);
+//        for (int i = 0; i < 300000; i++)
+//        {
+//            Dict.put(nodes.get(i), nodes.get(i));
+//        }
+//        System.out.println("结束时间Map:" + (System.currentTimeMillis() - stratTime));
+//
+//        stratTime = System.currentTimeMillis();
+//        System.out.println("查开始时间map:" + stratTime);
+//        for (int i = 0; i < 300000; i++)
+//        {
+//            Dict.get(nodes.get(i));
+//        }
+//        System.out.println("结束时间map:" + (System.currentTimeMillis() - stratTime));
+//
+//        System.gc();
+//
+//        Map<ByteKey, Object> map = new HashMap<>();
+//        stratTime = System.currentTimeMillis();
+//        System.out.println("存开始时间Dict:" + stratTime);
+//        for (int i = 0; i < 300000; i++)
+//        {
+//            map.put(nodes.get(i),  nodes.get(i));
+//        }
+//        System.out.println("结束时间Dict:" + (System.currentTimeMillis() - stratTime));
+//
+//        stratTime = System.currentTimeMillis();
+//        System.out.println("查开始时间Dict:" + stratTime);
+//        for (int i = 0; i < 300000; i++)
+//        {
+//            map.get(nodes.get(i));
+//        }
+//        System.out.println("结束时间Dict:" + (System.currentTimeMillis() - stratTime));
+//
+//
+//
+//        for (int i = 0; i < 300000; i++)
+//        {
+//            Object o = Dict.get(nodes.get(i));
+//            Object o1 = map.get(nodes.get(i));
+//            if(o==o1)
+//            {
+//                continue;
+//            }else
+//            {
+//                System.err.println("???");
+//            }
+//        }
+        //  System.out.println(dict.size()+"   "+test.size()+"   "+nodes.size());
 //        Dict dict = new Dict(4);
 //        Map<Integer,MNode> test=new HashMap<>();
 //        for(int i=0;i<10000;i++)
@@ -108,28 +201,28 @@ public class TestMap
 
     public static void main1(String[] args)
     {
-        BigMap bigMap=new BigMap(1500);
-        List<Integer> list=new ArrayList<>();
+        BigMap bigMap = new BigMap(1500);
+        List<Integer> list = new ArrayList<>();
         Random random = new Random();
-        for(int i=0;i<1000;i++)
+        for (int i = 0; i < 1000; i++)
         {
             int i1 = random.nextInt(1000);
             list.add(i1);
             bigMap.put(i1);
         }
-        for(int i=0;i<1000;i++)
+        for (int i = 0; i < 1000; i++)
         {
             boolean b = bigMap.containsKey(list.get(i));
-            if(!b)
+            if (!b)
             {
                 System.out.println(bigMap);
             }
         }
-        for(int i=0;i<1000;i++)
+        for (int i = 0; i < 1000; i++)
         {
-            int i1 = random.nextInt(1000,1500);
+            int i1 = random.nextInt(1000, 1500);
             boolean b = bigMap.containsKey(i1);
-            if(b)
+            if (b)
             {
                 System.out.println("?");
             }
