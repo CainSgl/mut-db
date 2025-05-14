@@ -26,5 +26,4 @@ public class BasicValueHandler {
         return deserializer.deserialize(in);
     }
 
-
 }

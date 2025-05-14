@@ -1,5 +1,7 @@
 package cainsgl.core.command.executor;
 
-public interface Executor
-{
+public interface Executor {
+
+
+
 }

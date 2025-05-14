@@ -1,7 +1,6 @@
 package cainsgl.core.persistence.RDB;
 
 import cainsgl.core.config.MutConfiguration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.ReentrantLock;
 
 /* 监听器 - 监听插入次数
 *  两种方案：监听器执行RDB流程；独立线程执行RDB流程
@@ -81,7 +79,6 @@ public class RDBListener {
     public static void addInsertCont(){
         counter.increment();
     }
-
 
     // 处理高频并发
     public static void handleHighFrequencyTrigger(){
@@ -163,4 +160,5 @@ public class RDBListener {
             Thread.currentThread().interrupt();
         }
     }
+
 }

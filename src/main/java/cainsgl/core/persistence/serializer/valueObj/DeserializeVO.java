@@ -2,30 +2,10 @@ package cainsgl.core.persistence.serializer.valueObj;
 
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
 
-public class DeserializeVO {
-
-    private String key;
-
-    private RedisObj<?> redisObj;
-
-    public DeserializeVO(String key, RedisObj<?> redisObj) {
-        this.key = key;
-        this.redisObj = redisObj;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public RedisObj<?> getRedisObj() {
-        return redisObj;
-    }
-
-    public void setRedisObj(RedisObj<?> redisObj) {
-        this.redisObj = redisObj;
+/* 纪录类 - 仅用于记录反序列化后得到的 key 以及 redisObj */
+public record DeserializeVO(String key, RedisObj<?> redisObj) {
+    @Override
+    public String toString() {
+        return key + ":" + redisObj.getValue() + "; type: " + redisObj.getType();
     }
 }

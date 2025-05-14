@@ -4,9 +4,7 @@ import cainsgl.core.persistence.serializer.impl.RedisObjSerializer;
 import cainsgl.core.persistence.serializer.valueObj.DeserializeVO;
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Test_Serializer {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -16,6 +14,6 @@ public class Test_Serializer {
         byte[] strData = serializer.serialize(strObj, "name");
         System.out.println(strData.toString());
         DeserializeVO deserializedStr = serializer.deserialize(strData);
-        System.out.println(deserializedStr.getKey() + ":" + deserializedStr.getRedisObj().getValue() + "; " + deserializedStr.getRedisObj().getType()); // 输出 "Hello"
+        System.out.println(deserializedStr.key() + ":" + deserializedStr.redisObj().getValue() + "; " + deserializedStr.redisObj().getType()); // 输出 "Hello"
     }
 }
