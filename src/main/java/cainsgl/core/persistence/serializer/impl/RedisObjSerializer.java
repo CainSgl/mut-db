@@ -22,7 +22,7 @@ public class RedisObjSerializer {
     private static final byte TYPE_LIST = 2;
 
     // 基本类型处理器（现仅支持 String、Integer、List）
-    private static final Map<Class<?>, BasicValueHandler> BASIC_TYPE_HANDLERS = new HashMap<>();
+    private static final Map<Byte, BasicValueHandler> BASIC_TYPE_HANDLERS = new HashMap<>();
 
     /* 注册各个处理器；根据不同的RedisObj，写入value的时候处理逻辑可能不一样
     *  1. 使用策略模式，通过RedisObj中的type值来获取不同的handler
@@ -31,19 +31,19 @@ public class RedisObjSerializer {
     * */
     static {
         // String 类型处理器
-        BASIC_TYPE_HANDLERS.put(String.class, new BasicValueHandler(
+        BASIC_TYPE_HANDLERS.put(TYPE_STRING, new BasicValueHandler(
                 (out, value) -> out.writeUTF((String) value),
                 in -> in.readUTF()
         ));
 
         // Integer 类型处理器
-        BASIC_TYPE_HANDLERS.put(Integer.class, new BasicValueHandler(
+        BASIC_TYPE_HANDLERS.put(TYPE_INTEGER, new BasicValueHandler(
                 (out, value) -> out.writeInt((Integer) value),
                 DataInputStream::readInt
         ));
 
         // List 类型处理器（递归处理）
-        BASIC_TYPE_HANDLERS.put(List.class, new BasicValueHandler(
+        BASIC_TYPE_HANDLERS.put(TYPE_LIST, new BasicValueHandler(
                 (out, value) -> serializeList(out, (List<?>) value),
                 RedisObjSerializer::deserializeList
         ));
@@ -57,10 +57,9 @@ public class RedisObjSerializer {
             // 序列化 key
             dataStream.writeUTF(key);
 
-            // 2. 序列化 Type 的类全名
-            Class<?> type = obj.getType();
-            dataStream.writeUTF(type.getName());
-
+            // 2. 序列化 Type
+            byte type = obj.getType();
+            dataStream.write(type);
 
             // 3. 序列化 Value
             Object value = obj.getValue();
@@ -85,8 +84,7 @@ public class RedisObjSerializer {
             String key = dataStream.readUTF();
 
             // 2. 反序列化 Type
-            String className = dataStream.readUTF();
-            Class<?> type = Class.forName(className);
+            byte type = dataStream.readByte();
 
             // 3. 反序列化 Value
             Object value = null;
@@ -102,22 +100,22 @@ public class RedisObjSerializer {
     }
 
     // 一般RedisBoj类型的 value 序列化逻辑
-    private void serializeValue(DataOutputStream out, Class<?> type, Object value) throws IOException {
+    private void serializeValue(DataOutputStream out, byte type, Object value) throws IOException {
         BasicValueHandler handler = BASIC_TYPE_HANDLERS.get(type);
         if (handler != null) {
             handler.serialize(out, value);
         } else {
-            throw new IOException("Unsupported type: " + type.getName());
+            throw new IOException("Unsupported type: " + type);
         }
     }
 
     // 一般redisObj类型的 value 反序列化逻辑
-    private Object deserializeValue(DataInputStream in, Class<?> type) throws IOException {
+    private Object deserializeValue(DataInputStream in, byte type) throws IOException {
         BasicValueHandler handler = BASIC_TYPE_HANDLERS.get(type);
         if (handler != null) {
             return handler.deserialize(in);
         } else {
-            throw new IOException("Unsupported type: " + type.getName());
+            throw new IOException("Unsupported type: " + type);
         }
     }
 

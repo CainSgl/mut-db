@@ -236,7 +236,7 @@ public class CommandAdapter
 
     public Manager getCmd()
     {
-        return NetWorkConfig.getCmd(cmd);
+        return (Manager) NetWorkConfig.getCmd(cmd);
     }
     public byte[][] getArgs()
     {

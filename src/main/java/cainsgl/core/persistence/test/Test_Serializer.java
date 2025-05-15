@@ -9,7 +9,7 @@ import java.io.IOException;
 public class Test_Serializer {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         // 示例1：序列化 String
-        RedisObj<String> strObj = new RedisObj<>("jack", String.class);
+        RedisObj<String> strObj = new RedisObj<>("jack", (byte)1);
         RedisObjSerializer serializer = new RedisObjSerializer();
         byte[] strData = serializer.serialize(strObj, "name");
         System.out.println(strData.toString());

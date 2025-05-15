@@ -4,9 +4,9 @@ public class RedisObj<T> {
 
     private T value; // 存储的数据
 
-    private Class<?> type; // 存储的数据类型
+    private byte type; // 存储的数据类型
 
-    public RedisObj(T value, Class<?> type) {
+    public RedisObj(T value, Byte type) {
         this.value = value;
         this.type = type;
     }
@@ -23,11 +23,11 @@ public class RedisObj<T> {
         return value;
     }
 
-    public Class<?> getType(){
+    public Byte getType(){
         return type;
     }
 
-    public void setType(Class<?> type){
+    public void setType(Byte type){
         this.type = type;
     }
 }

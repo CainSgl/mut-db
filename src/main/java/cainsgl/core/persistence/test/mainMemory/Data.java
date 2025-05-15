@@ -15,10 +15,10 @@ public class Data {
 
     private static void init(){
 
-        RedisObj<String> redisObj0 = new RedisObj<>("jack", String.class);
-        RedisObj<String> redisObj1 = new RedisObj<>("mary", String.class);
-        RedisObj<String> redisObj2 = new RedisObj<>("lee", String.class);
-        RedisObj<String> redisObj3 = new RedisObj<>("hong", String.class);
+        RedisObj<String> redisObj0 = new RedisObj<>("jack", (byte) 0);
+        RedisObj<String> redisObj1 = new RedisObj<>("mary", (byte)0);
+        RedisObj<String> redisObj2 = new RedisObj<>("lee", (byte)0);
+        RedisObj<String> redisObj3 = new RedisObj<>("hong", (byte)0);
 
         RedisObj<List<String>> listRedisObj = new RedisObj<>();
         List<String> list = new ArrayList<>();
@@ -27,7 +27,7 @@ public class Data {
         list.add("3");
         list.add("4");
         listRedisObj.setValue(list);
-        listRedisObj.setType(List.class);
+        listRedisObj.setType((byte)2);
 
         RedisObj<List<List<String>>> listListRedisObj = new RedisObj<>();
         List<List<String>> listList = new ArrayList<>();
@@ -44,7 +44,7 @@ public class Data {
         listList.add(list1);
         listList.add(list2);
         listListRedisObj.setValue(listList);
-        listListRedisObj.setType(List.class);
+        listListRedisObj.setType((byte)2);
 
         dataGroup.put("name1", redisObj0);
         dataGroup.put("name2", redisObj1);

@@ -18,7 +18,6 @@ public class RDBPersistence {
     private static final Logger log = LoggerFactory.getLogger(RDBPersistence.class);
 
     private static final String fileName = MutConfiguration.RDB.FILE_NAME;
-    private static final String SPLIT = "/";
 
     private static final RedisObjSerializer redisObjSerializer = new RedisObjSerializer();
 
