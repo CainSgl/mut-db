@@ -53,7 +53,7 @@ public class RDBPersistence {
 
                 // 反序列化数据
                 DeserializeVO deserializeVO = redisObjSerializer.deserialize(data);
-                log.debug("读取到的数据为： {}", deserializeVO);
+                log.debug("Now Value: {}", deserializeVO);
                 RedisObj<?> redisObj = deserializeVO.redisObj();
                 String key = deserializeVO.key();
                 Data.put(key, redisObj);
