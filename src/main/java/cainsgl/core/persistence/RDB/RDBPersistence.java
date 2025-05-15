@@ -27,17 +27,13 @@ public class RDBPersistence {
         // 模拟从主内存中拿取数据
         HashMap<String, RedisObj<?>> data = Data.getData();
         List<String> keyList = new ArrayList<>(data.keySet());
-        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))){
+        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(fileName))) {
             for (String key : keyList) {
                 RedisObj<?> redisObj = data.get(key);
                 byte[] serialized = redisObjSerializer.serialize(redisObj, key);
-                StringBuilder stringBuilder = new StringBuilder();
-                for (byte b : serialized) {
-                    stringBuilder.append(b);
-                    stringBuilder.append(SPLIT);
-                }
-                fileWriter.write(stringBuilder.toString());
-                fileWriter.newLine();
+                // 使用长度前缀法；写入真是数据之前先写入这个数组的字节数组长度
+                out.writeInt(serialized.length);
+                out.write(serialized);
             }
         } catch (IOException e) {
             log.error("Error while writing to file", e);
@@ -46,23 +42,27 @@ public class RDBPersistence {
     }
 
     public static void readOnBytes(){
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] bytesInfo = line.split(SPLIT);
-                byte[] value = new byte[bytesInfo.length];
-                for (int i = 0; i < bytesInfo.length; i++) {
-                    value[i] = Byte.parseByte(bytesInfo[i]);
-                }
-                try {
-                    DeserializeVO deserialize = redisObjSerializer.deserialize(value);
-                    System.out.println(deserialize.key() + "; " + deserialize.redisObj().getValue() + "; " + deserialize.redisObj().getType());
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(fileName))) {
+            while (dis.available() > 0) {
+                // 先读取数据的长度
+                int length = dis.readInt();
+
+                // 按照数据的长度读取字节数组
+                byte[] data = new byte[length];
+                dis.readFully(data);
+
+                // 反序列化数据
+                DeserializeVO deserializeVO = redisObjSerializer.deserialize(data);
+                log.debug("读取到的数据为： {}", deserializeVO);
+                RedisObj<?> redisObj = deserializeVO.redisObj();
+                String key = deserializeVO.key();
+                Data.put(key, redisObj);
             }
         } catch (IOException e) {
-            log.error("Error while reading from file! RDB file ERR", e);
+            log.error("Error while reading from file!", e);
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            log.error("Class Not Found While Deserialize This Data!", e);
             throw new RuntimeException(e);
         }
     }
