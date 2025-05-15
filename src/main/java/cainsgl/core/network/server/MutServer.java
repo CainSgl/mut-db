@@ -16,11 +16,11 @@ public class MutServer implements Stopable
     {
 
     }
-    private void init()
+    public void init()
     {
 
     }
-    private void start() throws Exception
+    public void start() throws Exception
     {
         Class<? extends ClassLoader> clasLoader = this.getClass().getClassLoader().getClass();
         if(!clasLoader.getName().equals("cainsgl.core.system.loader.MutClassLoader"))
