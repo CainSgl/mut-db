@@ -32,7 +32,7 @@ public class MutServerBuilder
 
     public MutServerBuilder start() throws Exception
     {
-        Method method = mutServerClass.getMethod("start");
+        Method method = mutServerClass.getDeclaredMethod("start");
         method.setAccessible(true);
         method.invoke(mutServer);
         return this;
@@ -40,7 +40,7 @@ public class MutServerBuilder
 
     public void stop() throws Exception
     {
-        Method method = mutServerClass.getMethod("stop");
+        Method method = mutServerClass.getDeclaredMethod("stop");
         method.setAccessible(true);
         method.invoke(mutServer);
     }

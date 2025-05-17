@@ -6,4 +6,8 @@ public class MutServerStartException extends RuntimeException
     {
         super(e);
     }
+    public MutServerStartException(String message)
+    {
+        super(message);
+    }
 }

@@ -18,9 +18,20 @@ public class MutConfiguration
     //初始化hashtable的链表长度
     public static final int initial_capacity=2;
     //设置hashtable的负载因子最大
-    public static final float MAX_Load_Factor=1.6f;
+    public static final float MAX_Load_Factor=2f;
     //设置hashtable的负载因子最小
     public static final float MIN_Load_Factor=0.5f;
-    //rehash的次数
-    public static final int rehashNum=6;
+
+
+
+//    public static final String[] ByteObj=new String[]{
+//        "cainsgl.core.data.key.ByteFastKey","cainsgl.core.data.key.ByteSuperKey","cainsgl.core.data.value.ByteValue"
+//    };
+
+    //分流器线程大小
+    public static final int shuntThreads=1;
+
+    //5个key就分裂
+    public static final int MAX_OVER_LOAD=5;
+    public static final int MIN_OVER_LOAD=1;
 }

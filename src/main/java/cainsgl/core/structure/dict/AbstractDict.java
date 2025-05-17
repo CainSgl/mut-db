@@ -1,173 +1,109 @@
 package cainsgl.core.structure.dict;
 
-import cainsgl.core.config.MutConfiguration;
-import cainsgl.core.data.MutObj;
-import cainsgl.core.structure.dict.entry.MNode;
-import cainsgl.core.utils.HashUtil;
+import java.util.*;
 
-public abstract class AbstractDict
+public abstract class AbstractDict<K, V> implements Map<K, V>
 {
-    DictHashTable[] dts = new DictHashTable[2];
-    int rehash = -1;
+    protected AbstractDictHt<K, V> MainTable;
+    protected AbstractDictHt<K, V> AssistTable;
+    //transient Set<K> keySet;
 
-    protected void startRehash()
+
+//    public AbstractDict2(int capacity)
+//    {
+//        // keySet = new HashSet<K>(capacity);
+//        MainTable = new DictHt<>(capacity);
+//    }
+//
+//    public AbstractDict2()
+//    {
+//        this(MutConfiguration.initial_capacity);
+//    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException
     {
-        float loadFactor = (float) dts[0].used / (float) dts[0].entries.length;
-        if (loadFactor > MutConfiguration.MAX_Load_Factor)
+        AbstractDict<K, V> clone = (AbstractDict<K, V>) super.clone();
+        if (clone.MainTable != null)
         {
-            dts[1] = new DictHashTable((dts[0].mask + 1) * 2);
-            rehash = 0;
-            lastStart = 0;
-        } else if (loadFactor < MutConfiguration.MIN_Load_Factor)
-        {
-            dts[1] = new DictHashTable((dts[0].mask + 1) / 2);
-            rehash = 0;
-            lastStart = 0;
+            clone.MainTable = (AbstractDictHt<K, V>) this.MainTable.clone();
         }
+        if (clone.AssistTable != null)
+        {
+            clone.AssistTable = (AbstractDictHt<K, V>) this.AssistTable.clone();
+        }
+        return clone;
     }
 
-    public AbstractDict(int capacity)
-    {
-        dts[0] = new DictHashTable(capacity);
-    }
-
+    @Override
     public int size()
     {
-        int len = 0;
-        if (dts[0] != null)
-        {
-            len = dts[0].used;
-        }
-        if (dts[1] != null)
-        {
-            len += dts[1].used;
-        }
-        return len;
+        return MainTable.size();
     }
 
+    @Override
     public boolean isEmpty()
     {
-        return size() == 0;
+        return MainTable.isEmpty();
     }
 
-    int lastStart;
-
-    public void rehash()
+    @Override
+    public boolean containsKey(Object o)
     {
-        if (rehash == -1)
-        {
-            return;
-        }
-        int i = MutConfiguration.rehashNum;
-        while (true)
-        {
-            //必须删除至少一个，除非全部都没删了，size为0
-            if (dts[0].used == 0)
-            {
-                rehashEnd();
-                return;
-            }
-            MNode mNode = dts[0].removeLast(lastStart);
-            if (mNode == null)
-            {
-                lastStart ++;
-            } else
-            {
-                dts[1].put(mNode);
-                i--;
-                if (i < 1)
-                {
-                    //下次再来
-                    return;
-                }
-            }
-        }
+        return MainTable.containsKey(o);
     }
 
-    public void rehashEnd()
+    @Override
+    public boolean containsValue(Object o)
     {
-        dts[0] = dts[1];
-        dts[1] = null;
-        rehash = -1;
-
+        return MainTable.containsValue(o);
     }
 
-    public MutObj get(byte[] o)
+    @Override
+    public V get(Object o)
     {
-        if (rehash == -1)
-        {
-            return dts[0].get(o);
-        } else
-        {
-            if (dts[0].used < dts[1].used)
-            {
-                return getByAllDt(dts[1], dts[0], o);
-            } else
-            {
-                return getByAllDt(dts[0], dts[1], o);
-            }
-
-        }
+        return MainTable.get(o);
     }
 
-    private MutObj getByAllDt(DictHashTable mainTable, DictHashTable viceTable, byte[] o)
+    @Override
+    public V put(K k, V v)
     {
-        int code = HashUtil.fastHash(o);
-        MutObj mutObj = mainTable.get(o, code);
-        if (mutObj != null)
-        {
-            return mutObj;
-        }
-        return viceTable.get(o, code);
+        return MainTable.put(k, v);
     }
 
-    public MutObj put(byte[] o, MutObj o2)
+    @Override
+    public V remove(Object o)
     {
-        if (rehash == -1)
-        {
-            MutObj put = dts[0].put(o, o2);
-            if (put == null)
-            {
-                startRehash();
-            }
-            return put;
-        } else
-        {
-            return dts[1].put(o, o2);
-        }
+        return MainTable.remove(o);
     }
 
-    public MutObj remove(byte[] o)
+    @Override
+    public void putAll(Map<? extends K, ? extends V> map)
     {
-        if (rehash == -1)
-        {
-            return dts[0].remove(o);
-        } else
-        {
-            if (dts[0].used < dts[1].used)
-            {
-                return removeAllDt(dts[1], dts[0], o);
-            } else
-            {
-                return removeAllDt(dts[0], dts[1], o);
-            }
-        }
+        MainTable.putAll(map);
     }
 
-    private MutObj removeAllDt(DictHashTable mainTable, DictHashTable viceTable, byte[] o)
-    {
-        int code = HashUtil.fastHash(o);
-        MutObj mutObj = mainTable.remove(o, code);
-        if (mutObj != null)
-        {
-            return mutObj;
-        }
-        return viceTable.remove(o, code);
-    }
-
+    @Override
     public void clear()
     {
-        dts = null;
+        MainTable.clear();
     }
 
+    @Override
+    public Set<K> keySet()
+    {
+        return MainTable.keySet();
+    }
+
+    @Override
+    public Collection<V> values()
+    {
+        return MainTable.values();
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet()
+    {
+        return MainTable.entrySet();
+    }
 }

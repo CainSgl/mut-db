@@ -16,7 +16,7 @@ public class ThreadManager
     public static final EventLoop[] GC_WORKER_GROUP;
 
     public static final int gcThreads;
-    private static int fakeThreads;
+    private final static int fakeThreads;
     private static final ThreadController threadController;
 
     static
@@ -66,15 +66,25 @@ public class ThreadManager
     }
 
 
-    public static EventLoop getEventLoop(int id)
+    public static EventLoop getEventLoop()
     {
-        return threadController.getEventLoop(id);
+        return threadController.getEventLoop();
     }
 
-    public static void backEventLoop(int id)
+    public static void backEventLoop(EventLoop eventLoop)
     {
-        threadController.backEventLoop(id);
+        threadController.backEventLoop(eventLoop);
     }
+
+    public static EventLoopGroup getEventLoopGroup(int threadsNum)
+    {
+        return threadController.getEventLoopGroup(threadsNum);
+    }
+    public static void backLoopGroup(EventLoopGroup eventLoopGroup)
+    {
+         threadController.backLoopGroup(eventLoopGroup);
+    }
+
 
     public static void stop() throws Exception
     {
