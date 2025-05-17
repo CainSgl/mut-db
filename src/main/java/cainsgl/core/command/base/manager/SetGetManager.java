@@ -1,6 +1,7 @@
 package cainsgl.core.command.base.manager;
 
 import cainsgl.core.command.base.processor.setget.GetProcessor;
+import cainsgl.core.command.base.processor.setget.SetNxProcessor;
 import cainsgl.core.command.base.processor.setget.SetProcessor;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
@@ -10,6 +11,7 @@ import cainsgl.core.data.value.ByteValue;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteValue>>
@@ -17,13 +19,13 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
 
     public SetGetManager()
     {
-        super(new SetProcessor(), new GetProcessor());
+        super(new SetProcessor(), new GetProcessor(),new SetNxProcessor());
     }
 
-    @SafeVarargs
-    public SetGetManager(Map<ByteSuperKey, ByteValue>... datas)
+
+    public SetGetManager(List<Map<ByteSuperKey, ByteValue>> datas)
     {
-        super(new SetProcessor());
+        this();
         for (Map<ByteSuperKey, ByteValue> data : datas)
         {
             map.putAll(data);
@@ -45,16 +47,16 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
             if (!testKey(key.getBytes()))
             {
                 //不是我的移除去
+                MutConfiguration.log.info("移除key,{}",key);
                 result.put(key, entry.getValue());
+                iterator.remove();
             }
-            iterator.remove();
         }
         return result;
     }
 
-    @SafeVarargs
     @Override
-    public final void createImpl(Map<ByteSuperKey, ByteValue>... datas)
+    public final void createImpl(List<Map<ByteSuperKey, ByteValue>> datas)
     {
         MutConfiguration.log.info("合并一个");
         new SetGetManager(datas);

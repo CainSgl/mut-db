@@ -9,6 +9,7 @@ import cainsgl.core.network.response.RESP2Response;
 import io.netty.util.concurrent.Future;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import java.util.function.Consumer;
@@ -65,7 +66,7 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
             {
                 new ShuntCommandProcessor<>(processor, commandShunt);
             }
-            commandShunt.addProcessors(this, processors);
+        //    commandShunt.addProcessors(this, processors);
             SHUNT_MAP.put(myClass, commandShunt);
         } else
         {
@@ -92,7 +93,7 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
         throw new UnsupportedOperationException("不支持直接使用ShuntCommandManager");
     }
 
-    public abstract void createImpl(D... datas);
+    public abstract void createImpl(List<D> datas);
 
     @Override
     public Future<Integer> overLoad()

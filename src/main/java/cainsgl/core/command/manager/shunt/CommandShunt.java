@@ -66,9 +66,15 @@ public class CommandShunt
         @Override
         public final void create(D... data)
         {
-            eventLoop.submit(() -> {
-                proxy.createImpl(data);
-            });
+            List<D> array = new ArrayList<>(data.length);
+            for (int i = 0; i < data.length; i++)
+            {
+                if (data[i] != null)
+                {
+                    array.add(data[i]);
+                }
+            }
+            proxy.createImpl(array);
         }
 
         @Override
@@ -115,13 +121,15 @@ public class CommandShunt
     public CommandShunt(ShuntCommandManager shuntCommandManager, CommandProcessor... proxy)
     {
         WORK_GROUP = ThreadManager.getEventLoopGroup(MutConfiguration.shuntThreads);
-        volumeThread = WORK_GROUP.next();
+        volumeThread = ThreadManager.getEventLoop();
         processors = new List[proxy.length];
         EventLoop eventLoop = ThreadManager.getEventLoop();
+
         for (int i = 0; i < proxy.length; i++)
         {
             processors[i] = new ArrayList<>();
             processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop));
+            MutConfiguration.log.info("create the proxy for shunt,command: {}", proxy[i].commandName());
         }
     }
 
@@ -167,7 +175,7 @@ public class CommandShunt
                     for (int i = 0; i < size; i++)
                     {
                         final int finalI = i;
-                        executors.get(i).manager.setTester(key -> new ByteFastKey(key).hashCode() % size == finalI);
+                        executors.get(i).manager.setTester(key -> new ByteFastKey(key).hashCode() % (size+1) == finalI);
                     }
                     Future[] separates = new Future[size];
                     for (int i = 0; i < size; i++)
@@ -201,14 +209,33 @@ public class CommandShunt
     {
         volumeThread.submit(() -> {
             EventLoop eventLoop = ThreadManager.getEventLoop();
-            for (int i = 0; i < processors.length; i++)
+            try
             {
-                if (proxys[i].minCount() < 1)
+                for (int i = 0; i < processors.length; i++)
                 {
-                    throw new UnsupportedOperationException("不支持没有key的CommandProcessor使用分流器");
+                    if (proxys[i].minCount() < 1)
+                    {
+                        // throw new UnsupportedOperationException("不支持没有key的CommandProcessor使用分流器");
+                        while (true)
+                        {
+                            MutConfiguration.log.error("不支持没有key的CommandProcessor使用分流器,command: {}", proxys[i].commandName());
+                        }
+                    }
+                    //检验一下，是否他们的名称相同
+                    if (!proxys[i].commandName().equals(processors[i].getFirst().commandName()))
+                    {
+                        throw new RuntimeException("在再次构建manager的时候，你的processor的顺序与第一次不符合");
+                    }
+                    {processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop));}
                 }
-                processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop));
+            } catch (ArrayIndexOutOfBoundsException e)
+            {
+                MutConfiguration.log.error("错误，在再次构建manager的时候，你的processor少于第一次构建的数量");
+            } catch (Exception e)
+            {
+                MutConfiguration.log.error("发生错误", e);
             }
+
         });
     }
 

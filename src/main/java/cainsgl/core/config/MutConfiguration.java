@@ -29,9 +29,9 @@ public class MutConfiguration
 //    };
 
     //分流器线程大小
-    public static final int shuntThreads=1;
+    public static final int shuntThreads=2;
 
     //5个key就分裂
-    public static final int MAX_OVER_LOAD=5;
+    public static final int MAX_OVER_LOAD=3;
     public static final int MIN_OVER_LOAD=1;
 }
