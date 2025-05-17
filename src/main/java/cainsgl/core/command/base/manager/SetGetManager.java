@@ -1,6 +1,7 @@
 package cainsgl.core.command.base.manager;
 
-import cainsgl.core.command.base.processor.SetProcessor;
+import cainsgl.core.command.base.processor.setget.GetProcessor;
+import cainsgl.core.command.base.processor.setget.SetProcessor;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
 
@@ -16,7 +17,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
 
     public SetGetManager()
     {
-        super(new SetProcessor());
+        super(new SetProcessor(), new GetProcessor());
     }
 
     @SafeVarargs
@@ -29,7 +30,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
         }
     }
 
-    public  Map<ByteSuperKey, ByteValue> map=new HashMap<>();
+    public Map<ByteSuperKey, ByteValue> map = new HashMap<>();
 
     @Override
     public Map<ByteSuperKey, ByteValue> separateImpl()

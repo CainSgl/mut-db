@@ -1,6 +1,12 @@
 package cainsgl.core.network.response;
 
+import cainsgl.core.network.response.impl.BulkStringResponse;
+import cainsgl.core.network.response.impl.SimpleStringResponse;
+
 public interface RESP2Response
 {
-    public byte[] getBytes();
+    BulkStringResponse NIL = new BulkStringResponse(true);
+    SimpleStringResponse OK = new SimpleStringResponse("OK");
+
+    byte[] getBytes();
 }

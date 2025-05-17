@@ -1,4 +1,4 @@
-package cainsgl.core.command.base.processor;
+package cainsgl.core.command.base.processor.setget;
 
 import cainsgl.core.command.base.manager.SetGetManager;
 import cainsgl.core.command.processor.CommandProcessor;
@@ -19,12 +19,6 @@ public class SetProcessor extends CommandProcessor<SetGetManager>
     public RESP2Response execute(byte[][] args, SetGetManager manager)
     {
         manager.map.put(new ByteSuperKey(args[0]), new ByteValue(args[1]));
-        return new RESP2Response() {
-            @Override
-            public byte[] getBytes()
-            {
-                return new byte[]{1,2,3,4,5,6,7,8,9};
-            }
-        };
+        return RESP2Response.OK;
     }
 }

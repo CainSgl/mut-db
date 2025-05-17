@@ -6,6 +6,7 @@ import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
+import cainsgl.core.network.response.impl.ErrorResponse;
 import cainsgl.core.utils.adapter.CommandAdapter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -32,9 +33,17 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
                 {
                     //参数个数不对
                     MutConfiguration.log.warn("参数个数不对");
+                    ByteBufAllocator alloc = ctx.alloc();
+                    byte[] bytes = new ErrorResponse("ERR","wrong number of arguments").getBytes();
+                    ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
+                    ctx.writeAndFlush(byteBuf);
                 } else
                 {
                     cmd.submit(args, resp2Response -> {
+                        if (resp2Response == null)
+                        {
+                            resp2Response = RESP2Response.NIL;
+                        }
                         ByteBufAllocator alloc = ctx.alloc();
                         byte[] bytes = resp2Response.getBytes();
                         ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
@@ -44,7 +53,11 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
             } else
             {
                 //找不到命令
-                MutConfiguration.log.warn("找不到命令");
+                MutConfiguration.log.warn("找不到命令=>{}", new String(resp[0]));
+                ByteBufAllocator alloc = ctx.alloc();
+                byte[] bytes = new ErrorResponse("ERR","wrong number of arguments for '"+new String(resp[0])+"'command").getBytes();
+                ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
+                ctx.writeAndFlush(byteBuf);
             }
             return;
         }
