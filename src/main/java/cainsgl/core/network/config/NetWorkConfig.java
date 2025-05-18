@@ -1,7 +1,6 @@
 package cainsgl.core.network.config;
 
 import cainsgl.core.command.manager.AbstractCommandManager;
-import cainsgl.core.command.manager.Manager;
 import cainsgl.core.data.ByteKey;
 
 import java.nio.charset.StandardCharsets;

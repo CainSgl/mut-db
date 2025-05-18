@@ -3,7 +3,6 @@ package cainsgl.core.command.manager;
 import cainsgl.core.command.processor.Processor;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 import java.util.ArrayList;
 import java.util.List;

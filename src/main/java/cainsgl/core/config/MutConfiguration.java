@@ -44,4 +44,20 @@ public class MutConfiguration {
         public static final String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\dump.txt";
 
     }
+
+    public static class AOF{
+
+        // 每一个独立缓冲区的内存大小
+        public static int BUFFER_SIZE = 1024 * 512; // 500KB(约为50万字节)
+
+        // 独立缓冲区的个数
+        public static int BUFFER_COUNT = 2;
+
+        // AOF执行的间隔时间
+        public static long INTERVAL_TIME = 5000L;
+
+        // AOF文件路径；暂时写死
+        public static String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\aof.text";
+
+    }
 }

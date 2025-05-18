@@ -3,7 +3,6 @@ package cainsgl.core.data;
 import cainsgl.core.utils.HashUtil;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class ByteKey
 {

@@ -1,6 +1,5 @@
 package cainsgl.core.network.decoder;
 
-import cainsgl.core.command.manager.Manager;
 import cainsgl.core.excepiton.MutDecoderException;
 import cainsgl.core.utils.adapter.CommandAdapter;
 import io.netty.buffer.ByteBuf;

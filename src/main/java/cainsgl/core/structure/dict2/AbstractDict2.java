@@ -1,8 +1,8 @@
 package cainsgl.core.structure.dict2;
 
-import cainsgl.core.config.MutConfiguration;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractDict2<K, V> implements Map<K, V>
 {
