@@ -27,9 +27,17 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
             {
                 MutConfiguration.log.warn("找不到命令=>{}", new String(resp[0]));
                 ByteBufAllocator alloc = ctx.alloc();
-                byte[] bytes = new ErrorResponse("ERR", "wrong number of arguments for '" + new String(resp[0]) + "'command").getBytes();
+                byte[] bytes;
+                if(resp.length > 1)
+                {
+                     bytes = new ErrorResponse("ERR", "unknown command `" + new String(resp[0]) + "`, with args beginning with:"+new String(resp[1]) ).getBytes();
+                }else
+                {
+                    bytes = new ErrorResponse("ERR", "unknown command `" + new String(resp[0]) + "`, with args beginning with:").getBytes();
+                }
                 ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
                 ctx.writeAndFlush(byteBuf);
+                return;
             }
             MutConfiguration.log.info("executing command: {}", cmd.commandName());
             byte[][] args = new byte[resp.length - 1][];
@@ -42,6 +50,7 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
                 byte[] bytes = new ErrorResponse("ERR", "wrong number of arguments").getBytes();
                 ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
                 ctx.writeAndFlush(byteBuf);
+                return;
             } else
             {
                 cmd.submit(args, resp2Response -> {
@@ -54,8 +63,8 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
                     ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
                     ctx.writeAndFlush(byteBuf);
                 }, null);
+                return;
             }
-            return;
         }
 
 

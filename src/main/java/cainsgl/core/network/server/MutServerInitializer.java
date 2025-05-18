@@ -17,7 +17,7 @@ public class MutServerInitializer extends ChannelInitializer<SocketChannel>
      //   pipeline.addLast(mutCommandDecoder);
         pipeline.addLast(new RESP2Decoder());
         pipeline.addLast(new MutServerCommandHandler());
-        pipeline.addLast(new MutGlobalExceptionHandler(null));
+        pipeline.addLast(new MutGlobalExceptionHandler());
     }
 
 

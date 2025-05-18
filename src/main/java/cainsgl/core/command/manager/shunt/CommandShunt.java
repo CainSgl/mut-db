@@ -4,7 +4,9 @@ import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.network.response.RESP2Response;
+import cainsgl.core.persistence.MutSerializer;
 import cainsgl.core.system.thread.ThreadManager;
+import cainsgl.core.utils.SerialiUtil;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.concurrent.Future;
@@ -13,13 +15,100 @@ import io.netty.util.concurrent.Promise;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 
-public class CommandShunt
+public class CommandShunt implements MutSerializer
 {
     private final List<CommandShuntComponent>[] processors;
     private final EventLoopGroup WORK_GROUP;
     private final EventLoop volumeThread;
+    private AtomicReference<Thread> serializerThread = null;
+
+    //长度前缀法
+    @Override
+    public byte[] serialization()
+    {
+        List<CommandShuntComponent> processor = processors[0];
+        int allLength = 0;
+        List<byte[]> allData = new ArrayList<>();
+        try
+        {
+            for (CommandShuntComponent c : processor)
+            {
+                byte[] serialization = c.manager.serializationByFuture().get();
+                allData.add(serialization);
+                allLength += serialization.length;
+            }
+        } catch (Exception e)
+        {
+            MutConfiguration.log.error("获取序列化数据的时候获取失败，出现异常", e);
+        }
+        //组合，并且由于我有多个serialization,后面反序列化也要扩张
+        //记录下长度
+        allLength += processor.size() * 4;
+        byte[] serialization = new byte[allLength];
+        int i = 0;
+        for (byte[] bytes : allData)
+        {
+            i = SerialiUtil.writeDataToInt(serialization, i, bytes.length);
+            //写入数据
+            System.arraycopy(bytes, 0, serialization, i, bytes.length);
+            i += bytes.length;
+        }
+        return serialization;
+    }
+
+    @Override
+    public void deSerializer(byte[] data)
+    {
+        EventLoop eventLoop = ThreadManager.getEventLoop();
+        eventLoop.submit(() -> {
+            serializerThread = new AtomicReference<>(Thread.currentThread());
+            List<byte[]> result = new ArrayList<>();
+            int offset = 0;
+            while (offset < data.length)
+            {
+                // 读取长度（4字节，大端序）
+                int length = SerialiUtil.readIntFromBytes(data, offset); // 需实现反向解析
+                offset += 4;
+                // 读取对应长度的数据
+                byte[] subData = new byte[length];
+                System.arraycopy(data, offset, subData, 0, length);
+                offset += length;
+                result.add(subData);
+            }
+
+            ShuntManagerProxy<?> manager = processors[0].getFirst().manager;
+            manager.deSerializer(result.getFirst());
+            int count = 1;//计数器，代表第几个被序列化了
+            while (count < result.size())
+            {
+                //说明需要去创建数据
+                if (count >= processors[0].size())
+                {
+                    //说明数据不足了，必须等待
+                    manager.create();
+                    serializerThread.compareAndSet(null,Thread.currentThread());
+                    LockSupport.park();
+                }
+                //这里是被唤醒和数据充足的时候，说明肯定都行
+                while (count >= processors[0].size())//再次检验
+                {
+                    //防止虚假唤醒
+                    MutConfiguration.log.info("CommandShunt里在没有添加的数据情况下被唤醒");
+                    serializerThread.compareAndSet(null,Thread.currentThread());
+                    LockSupport.park();
+                }
+                processors[0].get(count).manager.deSerializer(result.get(count));
+                count++;
+            }
+            serializerThread = null;
+            ThreadManager.backEventLoop(eventLoop);
+        });
+    }
+
 
     private static class CommandShuntComponent extends CommandProcessor<ShuntCommandManager<?>>
     {
@@ -51,7 +140,7 @@ public class CommandShunt
         }
     }
 
-    private static class ShuntManagerProxy<D> implements ShuntManager<D>
+    private static class ShuntManagerProxy<D> implements ShuntManager<D>, MutSerializer
     {
         public final ShuntCommandManager<D> proxy;
         final EventLoop eventLoop;
@@ -123,6 +212,30 @@ public class CommandShunt
                 proxy.addData((D) data);
             });
         }
+
+        public Future<byte[]> serializationByFuture()
+        {
+            Promise<byte[]> promise = eventLoop.newPromise();
+            eventLoop.submit(() -> {
+                byte[] serialization = proxy.serialization();
+                promise.setSuccess(serialization);
+            });
+            return promise;
+        }
+
+        @Override
+        public byte[] serialization()
+        {
+            return proxy.serialization();
+        }
+
+        @Override
+        public void deSerializer(byte[] data)
+        {
+            eventLoop.submit(() -> {
+                proxy.deSerializer(data);
+            });
+        }
     }
 
     public CommandShunt(ShuntCommandManager shuntCommandManager, CommandProcessor... proxy)
@@ -137,6 +250,7 @@ public class CommandShunt
             processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop));
             MutConfiguration.log.info("create the proxy for shunt,command: {}", proxy[i].commandName());
         }
+
     }
 
     public void shunt(ShuntCaller caller, byte[][] args, Consumer<RESP2Response> consumer)
@@ -260,7 +374,14 @@ public class CommandShunt
             {
                 MutConfiguration.log.error("发生错误", e);
             }
-
+            if (serializerThread != null)
+            {
+                //唤醒他
+                if (serializerThread.get() != null)
+                {
+                    LockSupport.unpark(serializerThread.getAndSet(null));
+                }
+            }
         });
     }
 

@@ -8,7 +8,6 @@ import cainsgl.core.config.MutConfiguration;
 
 import cainsgl.core.data.key.ByteSuperKey;
 import cainsgl.core.data.value.ByteValue;
-import cainsgl.core.structure.dict.Dict;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +20,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     {
         super(new SetProcessor(), new GetProcessor(), new SetNxProcessor());
     }
+
     public SetGetManager(List<Map<ByteSuperKey, ByteValue>> datas)
     {
         this();
@@ -87,5 +87,18 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     public Map<ByteSuperKey, ByteValue> destoryImpl()
     {
         return map;
+    }
+
+
+    @Override
+    public byte[] serialization()
+    {
+        return null;
+    }
+
+    @Override
+    public void deSerializer(byte[] data)
+    {
+
     }
 }

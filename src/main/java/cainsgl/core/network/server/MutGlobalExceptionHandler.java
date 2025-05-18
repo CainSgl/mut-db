@@ -12,10 +12,10 @@ import java.net.SocketException;
 
 public class MutGlobalExceptionHandler extends ChannelDuplexHandler
 {
-    MutCommandDecoder mutCommandDecoder;
-    public MutGlobalExceptionHandler(MutCommandDecoder mutCommandDecoder)
+
+    public MutGlobalExceptionHandler()
     {
-        this.mutCommandDecoder=mutCommandDecoder;
+
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -33,6 +33,5 @@ public class MutGlobalExceptionHandler extends ChannelDuplexHandler
             }
             MutConfiguration.log.error("出乎意料的异常",cause);
         }
-        mutCommandDecoder.reset();
     }
 }

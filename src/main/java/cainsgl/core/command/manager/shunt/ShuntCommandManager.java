@@ -1,11 +1,13 @@
 package cainsgl.core.command.manager.shunt;
 
+import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.command.manager.CommandManager;
 
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
+import cainsgl.core.persistence.MutSerializer;
 import io.netty.util.concurrent.Future;
 
 import java.util.HashMap;
@@ -14,7 +16,7 @@ import java.util.Map;
 
 import java.util.function.Consumer;
 
-public abstract class ShuntCommandManager<D> implements CommandManager, ShuntManager<D>
+public abstract class ShuntCommandManager<D> implements CommandManager, ShuntManager<D>, MutSerializer
 {
     private static class ShuntCommandProcessor<M extends CommandManager> extends CommandProcessor<M> implements ShuntCaller
     {
@@ -68,6 +70,7 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
             }
         //    commandShunt.addProcessors(this, processors);
             SHUNT_MAP.put(myClass, commandShunt);
+            CommandConfiguration.register(commandShunt,this);
         } else
         {
             //第二次进来，直接往ShuntCommand里添加数据
