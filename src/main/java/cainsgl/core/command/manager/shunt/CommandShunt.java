@@ -116,6 +116,13 @@ public class CommandShunt
             });
             return promise;
         }
+
+        public void addData(Object data)
+        {
+            eventLoop.submit(() -> {
+                proxy.addData((D) data);
+            });
+        }
     }
 
     public CommandShunt(ShuntCommandManager shuntCommandManager, CommandProcessor... proxy)
@@ -124,7 +131,6 @@ public class CommandShunt
         volumeThread = ThreadManager.getEventLoop();
         processors = new List[proxy.length];
         EventLoop eventLoop = ThreadManager.getEventLoop();
-
         for (int i = 0; i < proxy.length; i++)
         {
             processors[i] = new ArrayList<>();
@@ -154,11 +160,12 @@ public class CommandShunt
                 return;
             }
             isVolume = true;
+
             int size = executors.size();
             List<Future<Integer>> futures = new ArrayList<>(size);
-            for (int i = 0; i < size; i++)
+            for (CommandShuntComponent executor : executors)
             {
-                Future<Integer> future = executors.get(i).manager.overLoad();
+                Future<Integer> future = executor.manager.overLoad();
                 futures.add(future);
             }
             try
@@ -175,25 +182,43 @@ public class CommandShunt
                     for (int i = 0; i < size; i++)
                     {
                         final int finalI = i;
-                        executors.get(i).manager.setTester(key -> new ByteFastKey(key).hashCode() % (size+1) == finalI);
+                        executors.get(i).manager.setTester(key -> new ByteFastKey(key).hashCode() % (size + 1) == finalI);
                     }
-                    Future[] separates = new Future[size];
-                    for (int i = 0; i < size; i++)
-                    {
-                        separates[i] = executors.get(i).manager.separate();
-                    }
+                    //      Future[] separates = new Future[size];
+//                    for (int i = 0; i < size; i++)
+//                    {
+//                        separates[i] = ;
+//                    }
+                    //防止全量阻塞，这里本来是不阻塞的，但是为了防止别人开发命令不规范
                     Object[] datas = new Object[size];
                     for (int i = 0; i < size; i++)
                     {
-                        datas[i] = separates[i].get();
+                        datas[i] = executors.get(i).manager.separate().get();
                     }
                     ShuntManagerProxy manager = executors.getFirst().manager;
                     manager.create(datas);
                 } else if (AlloverLoad / size < MutConfiguration.MIN_OVER_LOAD)
                 {
-                    //TODO 需要减
-
+                    //销毁最后一个
+                    for (int i = 0; i < size; i++)
+                    {
+                        //设置tester，跳过最后一个
+                        final int finalI = i;
+                        executors.get(i).manager.setTester(key -> new ByteFastKey(key).hashCode() % (size - 1) == finalI);
+                    }
+                    //提醒最后一个，给他把数据删除
+                    for (List<CommandShuntComponent> processor : processors)
+                    {
+                        processor.removeLast();
+                    }
+                    Object o = processors[0].getLast().manager.destory().get();
+                    //这里如果在分流处理，由于阻塞，不会导致不一致，只有
+                    for (int i = 0; i < size; i++)
+                    {
+                        executors.get(i).manager.addData(o);
+                    }
                 }
+                return;
             } catch (Exception e)
             {
                 MutConfiguration.log.error("====>不期望的错误", e);

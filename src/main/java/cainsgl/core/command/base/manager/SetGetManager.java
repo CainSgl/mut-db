@@ -8,6 +8,7 @@ import cainsgl.core.config.MutConfiguration;
 
 import cainsgl.core.data.key.ByteSuperKey;
 import cainsgl.core.data.value.ByteValue;
+import cainsgl.core.structure.dict.Dict;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,13 +17,10 @@ import java.util.Map;
 
 public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteValue>>
 {
-
     public SetGetManager()
     {
-        super(new SetProcessor(), new GetProcessor(),new SetNxProcessor());
+        super(new SetProcessor(), new GetProcessor(), new SetNxProcessor());
     }
-
-
     public SetGetManager(List<Map<ByteSuperKey, ByteValue>> datas)
     {
         this();
@@ -47,7 +45,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
             if (!testKey(key.getBytes()))
             {
                 //不是我的移除去
-                MutConfiguration.log.info("移除key,{}",key);
+                MutConfiguration.log.info("移除key,{}", key);
                 result.put(key, entry.getValue());
                 iterator.remove();
             }
@@ -58,7 +56,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     @Override
     public final void createImpl(List<Map<ByteSuperKey, ByteValue>> datas)
     {
-        MutConfiguration.log.info("合并一个");
+        MutConfiguration.log.info("创建新manager");
         new SetGetManager(datas);
     }
 
@@ -66,6 +64,23 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     public Integer overLoadImpl()
     {
         return map.size();
+    }
+
+    @Override
+    public void addData(Map<ByteSuperKey, ByteValue> data)
+    {
+        MutConfiguration.log.info("开始合并");
+        for (Map.Entry<ByteSuperKey, ByteValue> entry : map.entrySet())
+        {
+            ByteSuperKey key = entry.getKey();
+            if (testKey(key.getBytes()))
+            {
+                //是我的key，添加上
+                MutConfiguration.log.info("添加key,{}", key);
+                map.put(key, entry.getValue());
+            }
+        }
+
     }
 
     @Override

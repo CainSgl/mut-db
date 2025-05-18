@@ -111,6 +111,9 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
         throw new UnsupportedOperationException("不支持直接使用ShuntCommandManager");
     }
 
+    public abstract void addData(D data);
+
+
     public abstract D destoryImpl();
 
     public void setTester(Tester tester)

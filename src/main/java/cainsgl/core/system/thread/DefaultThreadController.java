@@ -42,10 +42,12 @@ public class DefaultThreadController implements ThreadController
     {
         Integer id;
         AtomicInteger used = new AtomicInteger(1);
+        final int num;
 
         public ThreadControllerEventLoopGroup(int num)
         {
             super(num);
+            this.num = num;
             this.id = DefaultThreadController.THREAD_ARRAY.size();
             fakeThreadsNum -= num;
         }
@@ -92,7 +94,7 @@ public class DefaultThreadController implements ThreadController
         }
         ThreadControllerEventLoopGroup eventExecutors = new ThreadControllerEventLoopGroup(threadsNum);
         THREAD_GROUPS.add(eventExecutors);
-        fakeThreadsNum--;
+        fakeThreadsNum -= threadsNum;
         return eventExecutors;
     }
 
@@ -104,7 +106,7 @@ public class DefaultThreadController implements ThreadController
         {
             //销毁
             THREAD_GROUPS.remove(group);
-            fakeThreadsNum++;
+            fakeThreadsNum += group.num;
             group.shutdownGracefully();
         }
     }
