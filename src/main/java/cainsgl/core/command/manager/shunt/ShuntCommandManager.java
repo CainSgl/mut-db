@@ -14,17 +14,15 @@ import java.util.Map;
 
 import java.util.function.Consumer;
 
-public abstract class ShuntCommandManager<D> implements CommandManager, ShuntManager<D>
-{
-    private static class ShuntCommandProcessor<M extends CommandManager> extends CommandProcessor<M> implements ShuntCaller
-    {
+public abstract class ShuntCommandManager<D> implements CommandManager, ShuntManager<D> {
+
+    private static class ShuntCommandProcessor<M extends CommandManager> extends CommandProcessor<M> implements ShuntCaller {
 
         final CommandProcessor<?> proxy;
         final CommandShunt commandShunt;
         final int record;
 
-        public ShuntCommandProcessor(CommandProcessor processor, CommandShunt commandShunt)
-        {
+        public ShuntCommandProcessor(CommandProcessor processor, CommandShunt commandShunt) {
             super(processor.minCount(), processor.maxCount(), processor.commandName(), processor.parameters());
             this.proxy = processor;
             this.commandShunt = commandShunt;
@@ -33,15 +31,13 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
         }
 
         @Override
-        public RESP2Response execute(byte[][] args, M manager)
-        {
+        public RESP2Response execute(byte[][] args, M manager) {
             //   return null;
             throw new UnsupportedOperationException("不支持直接调用分流器的execute");
         }
         //最终被执行的
         @Override
-        public void submit(byte[][] args, Consumer<RESP2Response> consumer, M manager)
-        {
+        public void submit(byte[][] args, Consumer<RESP2Response> consumer, M manager) {
             commandShunt.shunt(this, args, consumer);
         }
 
@@ -54,22 +50,18 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
 
     private static final Map<Class<?>, CommandShunt> SHUNT_MAP = new HashMap<>();
     @SafeVarargs
-    public ShuntCommandManager(CommandProcessor... processors)
-    {
+    public ShuntCommandManager(CommandProcessor... processors) {
         Class<?> myClass = this.getClass();
         CommandShunt commandShunt = SHUNT_MAP.get(myClass);
-        if (commandShunt == null)
-        {
+        if (commandShunt == null) {
             commandShunt = new CommandShunt(this, processors);
             //第一次进来
-            for (CommandProcessor processor : processors)
-            {
+            for (CommandProcessor processor : processors) {
                 new ShuntCommandProcessor<>(processor, commandShunt);
             }
         //    commandShunt.addProcessors(this, processors);
             SHUNT_MAP.put(myClass, commandShunt);
-        } else
-        {
+        } else {
             //第二次进来，直接往ShuntCommand里添加数据
             MutConfiguration.log.info("a command overload,expanding it.");
             commandShunt.addProcessors(this, processors);
@@ -100,8 +92,6 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
     {
         throw new UnsupportedOperationException("不支持直接使用ShuntCommandManager");
     }
-
-
 
     public abstract Integer overLoadImpl();
 

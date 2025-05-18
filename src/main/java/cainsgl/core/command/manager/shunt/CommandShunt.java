@@ -107,8 +107,7 @@ public class CommandShunt
         }
 
         @Override
-        public Future<D> destory()
-        {
+        public Future<D> destory() {
             Promise<D> promise = eventLoop.newPromise();
             eventLoop.submit(() -> {
                 promise.setSuccess(proxy.destoryImpl());
@@ -146,11 +145,9 @@ public class CommandShunt
 
     boolean isVolume = false;
 
-    private void autoVolume(List<CommandShuntComponent> executors)
-    {
+    private void autoVolume(List<CommandShuntComponent> executors) {
         volumeThread.submit(() -> {
-            if (isVolume)
-            {
+            if (isVolume) {
                 return;
             }
             isVolume = true;
@@ -238,76 +235,6 @@ public class CommandShunt
 
         });
     }
-
-
-//        WORK_GROUP.submit(()->{
-//            int index = caller.inManagerIndex;
-//            List<CommandProcessor<? extends  CommandManager>> executor = processors[index];
-//            if(caller.isWillOverLoad())
-//            {
-//                autoVolume(executor,caller);
-//            }
-//            ShuntExecutor<Object> shuntExecutor = executor.get(new ByteFastKey(args[0]).hashCode() % executor.size());
-//            shuntExecutor.submit(args, consumer);
-//        });
-//    }
-//
-//
-//
-//    boolean isJudge=false;
-//    private void autoVolume(List<CommandProcessor<?>> executors, ShuntProcessorProxy caller)
-//    {
-//        if(isJudge)
-//        {
-//            return;
-//        }
-//        isJudge = true;
-//        volumeThread.submit(() -> {
-//            int overLoadCount = 0;
-//            for (ShuntExecutor<Object> executor : executors)
-//            {
-//                if (executor.overLoad())
-//                {
-//                    overLoadCount++;
-//                }
-//            }
-//            int size = executors.size();
-//            if (overLoadCount > size / 2)
-//            {
-//                //扩容
-//                for (int i = 0; i <size; i++)
-//                {
-//                    int finalI = i;
-//                    executors.get(i).setTester((byte[] key) -> finalI == new ByteFastKey(key).hashCode() % size);
-//                }
-//                Future<Object>[] futures = new Future[size];
-//                for(int i=0;i<size;i++)
-//                {
-//                    Future<Object> data = executors.get(i).splitByFuture();
-//                    futures[i]=data;
-//                }
-//                try{
-//                    Object[] datas=new Object[size];
-//                    for(int i=0;i<size;i++)
-//                    {
-//                        Object o = futures[i].get();
-//                        datas[i]=o;
-//                    }
-//                    //创建对象
-//                    ShareMemory shareMemory1 = shareMemory.newMemory();
-//
-//                }catch (Exception e)
-//                {
-//                    MutConfiguration.log.error("Failed to auto volume", e);
-//                }finally
-//                {
-//                    isJudge = false;
-//                }
-//
-//            }
-//        });
-//    }
-
 
     int idRecord = -1;
 

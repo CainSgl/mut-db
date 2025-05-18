@@ -8,11 +8,9 @@ public class CommandManagerProxy implements CommandManager
 {
 
     @SafeVarargs
-    public CommandManagerProxy(CommandProcessor<CommandManager>... processors)
-    {
+    public CommandManagerProxy(CommandProcessor<CommandManager>... processors) {
         //注入Manger
-        for (CommandProcessor<CommandManager> processor : processors)
-        {
+        for (CommandProcessor<CommandManager> processor : processors) {
             new CommandProcessorProxy<>(this, processor);
         }
     }

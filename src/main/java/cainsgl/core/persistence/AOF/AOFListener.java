@@ -56,6 +56,14 @@ public class AOFListener {
         }, 0, intervalTime, TimeUnit.MILLISECONDS);
     }
 
+    public static void triggerAof(byte[] cmd, byte[][] args){
+        // 向缓冲区写命令信息
+    }
+
+    public static boolean isOpenAOF(){
+        return true;
+    }
+
     public static void addPacket(String key, byte[] value, Long expire, int bufferPosition) {
         ByteBuffer buffer = buffers[bufferPosition];
         if((buffer.remaining() - 100) < (key.getBytes().length + value.length + expire.toString().getBytes().length)){

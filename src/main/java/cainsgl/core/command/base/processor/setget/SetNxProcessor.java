@@ -10,8 +10,8 @@ import cainsgl.core.network.response.impl.NumberResponse;
 
 import java.util.List;
 
-public class SetNxProcessor extends CommandProcessor<SetGetManager>
-{
+public class SetNxProcessor extends CommandProcessor<SetGetManager> {
+
     public SetNxProcessor()
     {
         super(2, 2, "setnx", List.of("string"));

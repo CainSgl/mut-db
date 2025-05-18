@@ -6,10 +6,9 @@ import cainsgl.core.network.response.RESP2Response;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 
-public class ShareThreadManager extends CommandManagerProxy
-{
-    public ShareThreadManager(CommandProcessor<?>... processors)
-    {
+public class ShareThreadManager extends CommandManagerProxy {
+
+    public ShareThreadManager(CommandProcessor<?>... processors) {
         NonBlockCommandProcessor<CommandManager>[] proxyArray = new NonBlockCommandProcessor[processors.length];
         for (int i = 0; i < proxyArray.length; i++)
         {

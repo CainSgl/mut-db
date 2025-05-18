@@ -22,12 +22,6 @@ public class MutConfiguration
     //设置hashtable的负载因子最小
     public static final float MIN_Load_Factor=0.5f;
 
-
-
-//    public static final String[] ByteObj=new String[]{
-//        "cainsgl.core.data.key.ByteFastKey","cainsgl.core.data.key.ByteSuperKey","cainsgl.core.data.value.ByteValue"
-//    };
-
     //分流器线程大小
     public static final int shuntThreads=2;
 

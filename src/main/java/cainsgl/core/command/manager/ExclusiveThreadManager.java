@@ -6,14 +6,12 @@ import cainsgl.core.network.response.RESP2Response;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 
-public class ExclusiveThreadManager extends CommandManagerProxy
-{
-    private static class ExclusiveThreadCommandProcessor<T> extends NonBlockCommandProcessor<T>
-    {
+public class ExclusiveThreadManager extends CommandManagerProxy {
+
+    private static class ExclusiveThreadCommandProcessor<T> extends NonBlockCommandProcessor<T> {
         private final CommandProcessor<T> proxy;
 
-        public ExclusiveThreadCommandProcessor(CommandProcessor<T> commandProcessor)
-        {
+        public ExclusiveThreadCommandProcessor(CommandProcessor<T> commandProcessor) {
             super(ThreadManager.getEventLoop(), commandProcessor.minCount(), commandProcessor.maxCount(), commandProcessor.commandName(), commandProcessor.parameters());
             proxy = commandProcessor;
         }
@@ -26,12 +24,9 @@ public class ExclusiveThreadManager extends CommandManagerProxy
 
     }
 
-
-    public ExclusiveThreadManager(CommandProcessor<CommandManager>... processors)
-    {
+    public ExclusiveThreadManager(CommandProcessor<CommandManager>... processors) {
         NonBlockCommandProcessor<CommandManager>[] proxyArray = new NonBlockCommandProcessor[processors.length];
-        for (int i = 0; i < proxyArray.length; i++)
-        {
+        for (int i = 0; i < proxyArray.length; i++) {
             proxyArray[i] = new ExclusiveThreadCommandProcessor<>(processors[i]);
         }
         super(proxyArray);

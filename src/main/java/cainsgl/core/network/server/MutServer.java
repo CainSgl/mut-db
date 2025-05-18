@@ -1,6 +1,6 @@
 package cainsgl.core.network.server;
 
-import cainsgl.core.command.config.TestConfig;
+import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.excepiton.MutServerStartException;
 import cainsgl.core.system.Stopable;
@@ -9,10 +9,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class MutServer implements Stopable
 {
@@ -24,7 +20,7 @@ public class MutServer implements Stopable
 
     private void init(ClassLoader classLoader) throws Exception
     {
-        new TestConfig();
+        new CommandConfiguration();
     }
     private void start() throws Exception
     {
