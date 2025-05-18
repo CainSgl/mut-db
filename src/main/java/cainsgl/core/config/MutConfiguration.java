@@ -22,16 +22,48 @@ public class MutConfiguration
     //设置hashtable的负载因子最小
     public static final float MIN_Load_Factor=0.5f;
 
-
-
-//    public static final String[] ByteObj=new String[]{
-//        "cainsgl.core.data.key.ByteFastKey","cainsgl.core.data.key.ByteSuperKey","cainsgl.core.data.value.ByteValue"
-//    };
-
     //分流器线程大小
     public static final int shuntThreads=2;
 
     //5个key就分裂
     public static final int MAX_OVER_LOAD=3;
     public static final int MIN_OVER_LOAD=1;
+    //一次rehash的次数
+    public static final int rehashNum = 6;
+
+    // RDB相关配置
+    public static class RDB{
+
+        // 执行RDB间隔单位时间 单位毫秒
+        public static long INTERVAL_TIME = 2000L;
+
+        // 单位时间内插入数据的次数
+        public static long INSERT_COUNT = 10L;
+
+        // 业务类型 - LOW; HIGH
+        public static String BUSINESS_TYPE = "HIGH";
+
+        // 最大延迟次数
+        public static final int MAX_DELAY_COUNT = 5;
+
+        // 指示 RDB文件名称 TODO - 暂时使用绝对路径
+        public static final String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\dump.txt";
+
+    }
+
+    public static class AOF{
+
+        // 每一个独立缓冲区的内存大小
+        public static int BUFFER_SIZE = 1024 * 512; // 500KB(约为50万字节)
+
+        // 独立缓冲区的个数
+        public static int BUFFER_COUNT = 2;
+
+        // AOF执行的间隔时间
+        public static long INTERVAL_TIME = 5000L;
+
+        // AOF文件路径；暂时写死
+        public static String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\aof.text";
+
+    }
 }
