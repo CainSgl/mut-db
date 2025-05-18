@@ -1,5 +1,6 @@
 package cainsgl.core.network.decoder;
 
+import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.excepiton.MutDecoderException;
 import cainsgl.core.utils.adapter.CommandAdapter;
 import io.netty.buffer.ByteBuf;
@@ -8,15 +9,17 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.util.List;
 
+@Deprecated
 public class MutCommandDecoder extends ByteToMessageDecoder
 {
     private CommandAdapter cmdAdapter;
     private byte[] cache;
-
+    private byte[] cacheSize;
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> list) throws Exception
     {
         int len = in.readableBytes();
+        MutConfiguration.log.info("这次数据:{},{}",len,cache);
         if (len == 0)
         {
             return;

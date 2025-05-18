@@ -1,6 +1,7 @@
 package cainsgl.core.utils.adapter;
 
-import cainsgl.core.command.manager.Manager;
+import cainsgl.core.command.processor.CommandProcessor;
+
 import cainsgl.core.network.config.NetWorkConfig;
 
 
@@ -46,19 +47,19 @@ public class CommandAdapter
             }
             while (true)
             {
-                if(offset==data.length)
+                if (offset == data.length)
                 {
-                    expectedOffset=offset;
+                    expectedOffset = offset;
                     return -1;
                 }
                 if (data[offset] == '\r')
                 {
-                    if(offset+1==data.length)
+                    if (offset + 1 == data.length)
                     {
-                        expectedOffset=data.length;
+                        expectedOffset = data.length;
                         return -1;
                     }
-                    if(data[offset+1]=='\n')
+                    if (data[offset + 1] == '\n')
                     {
                         expectedOffset = offset + 2;
                         return num;
@@ -86,7 +87,7 @@ public class CommandAdapter
         private RESP2InfoAdapter(int len, int offset)
         {
             infoBytes = new byte[len];
-            expectedOffset = offset + len+2;
+            expectedOffset = offset + len + 2;
         }
 
         @Override
@@ -133,7 +134,7 @@ public class CommandAdapter
                 return -1;
             } else
             {
-                infoAdapter = new RESP2InfoAdapter(i,numberAdapter.getExpectedOffset());
+                infoAdapter = new RESP2InfoAdapter(i, numberAdapter.getExpectedOffset());
                 int i1 = infoAdapter.tryDecode(numberAdapter.getExpectedOffset(), data);
                 numberAdapter = null;
                 return i1;
@@ -231,10 +232,16 @@ public class CommandAdapter
         }
     }
 
-    public Manager getCmd()
+    public byte[] getCmd()
     {
-        return (Manager) NetWorkConfig.getCmd(cmd);
+        return cmd;
     }
+
+    public CommandProcessor getExecutor()
+    {
+        return NetWorkConfig.getCmd(cmd);
+    }
+
     public byte[][] getArgs()
     {
         return Args;

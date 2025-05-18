@@ -1,30 +1,44 @@
 package cainsgl.core.system.thread;
 
+import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.EventLoop;
+import io.netty.channel.EventLoopGroup;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 import static cainsgl.core.system.thread.ThreadManager.SERVER_WORKER_GROUP;
 
 public class CompactThreadController implements ThreadController
 {
-    public  final EventLoop[] eventWorkerGroup;
-    public CompactThreadController(int workThreads)
-    {
-        eventWorkerGroup=new EventLoop[workThreads];
-        for(int i = 0;i < workThreads;i++)
-        {
-            eventWorkerGroup[i] = SERVER_WORKER_GROUP.next();
-        }
+    int fakeThreadsNum;
 
-    }
-    @Override
-    public EventLoop getEventLoop(int id)
+    public CompactThreadController(int fakeThreadsNum)
     {
-      return eventWorkerGroup[id%eventWorkerGroup.length];
+        this.fakeThreadsNum = fakeThreadsNum;
     }
 
     @Override
-    public void backEventLoop(int id)
+    public EventLoop getEventLoop()
     {
-        return;
+        return null;
     }
+
+    @Override
+    public void backEventLoop(EventLoop eventLoop)
+    {
+
+    }
+
+    @Override
+    public EventLoopGroup getEventLoopGroup(int threadsNum)
+    {
+        return null;
+    }
+
+    @Override
+    public void backLoopGroup(EventLoopGroup eventLoopGroup)
+    {
+
+    }
+
+
 }
