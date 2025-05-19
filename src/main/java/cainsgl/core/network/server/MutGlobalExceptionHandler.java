@@ -1,7 +1,6 @@
 package cainsgl.core.network.server;
 
 import cainsgl.core.config.MutConfiguration;
-import cainsgl.core.network.decoder.MutCommandDecoder;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;

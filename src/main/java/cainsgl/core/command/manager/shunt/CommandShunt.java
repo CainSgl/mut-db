@@ -14,7 +14,6 @@ import io.netty.util.concurrent.Promise;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
@@ -385,7 +384,6 @@ public class CommandShunt implements MutSerializer
         });
     }
 
-
 //        WORK_GROUP.submit(()->{
 //            int index = caller.inManagerIndex;
 //            List<CommandProcessor<? extends  CommandManager>> executor = processors[index];
@@ -453,7 +451,6 @@ public class CommandShunt implements MutSerializer
 //            }
 //        });
 //    }
-
 
     int idRecord = -1;
 

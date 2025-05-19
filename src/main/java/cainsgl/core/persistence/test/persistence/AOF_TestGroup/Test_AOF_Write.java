@@ -1,4 +1,4 @@
-package cainsgl.core.persistence.test;
+package cainsgl.core.persistence.test.persistence.AOF_TestGroup;
 
 import cainsgl.core.persistence.test.command.SetProcessor;
 import cainsgl.core.persistence.test.mainMemory.Data;

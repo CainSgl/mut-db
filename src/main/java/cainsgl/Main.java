@@ -2,13 +2,10 @@ package cainsgl;
 
 import cainsgl.core.network.server.MutServerBuilder;
 
-public class Main
-{
+public class Main {
 
-
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         MutServerBuilder.build().start();
-
     }
+
 }

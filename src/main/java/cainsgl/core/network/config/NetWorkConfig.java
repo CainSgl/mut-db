@@ -1,9 +1,7 @@
 package cainsgl.core.network.config;
 
 import cainsgl.core.command.processor.CommandProcessor;
-
 import cainsgl.core.data.key.ByteFastIgnoreCaseKey;
-import cainsgl.core.data.key.ByteFastKey;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

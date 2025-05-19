@@ -1,4 +1,4 @@
-package cainsgl.core.persistence.test;
+package cainsgl.core.persistence.test.persistence.RDB_TestGroup;
 
 
 import cainsgl.core.persistence.RDB.RDBPersistence;

@@ -1,7 +1,5 @@
 package cainsgl.core.command.processor;
 
-import cainsgl.core.command.manager.CommandManager;
-import cainsgl.core.command.manager.CommandManagerProxy;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
 

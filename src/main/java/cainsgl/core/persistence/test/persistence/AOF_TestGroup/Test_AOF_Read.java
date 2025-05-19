@@ -1,6 +1,6 @@
-package cainsgl.core.persistence.test;
+package cainsgl.core.persistence.test.persistence.AOF_TestGroup;
 
-import cainsgl.core.persistence.AOF.AOFListener;
+import cainsgl.core.persistence.AOF.impl.AOFListener;
 
 import java.util.List;
 

@@ -4,8 +4,8 @@ import cainsgl.core.network.server.MutServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MutConfiguration
-{
+public class MutConfiguration {
+
     public static final Logger log = LoggerFactory.getLogger(MutServer.class);
     public static final Integer port=6379;
     public static final Integer backlog=128;
@@ -54,7 +54,7 @@ public class MutConfiguration
     public static class AOF{
 
         // 每一个独立缓冲区的内存大小
-        public static int BUFFER_SIZE = 1024 * 512; // 500KB(约为50万字节)
+        public static int BUFFER_SIZE = 1024 * 1024 * 4; // 500KB(约为50万字节)
 
         // 独立缓冲区的个数
         public static int BUFFER_COUNT = 2;
@@ -63,7 +63,7 @@ public class MutConfiguration
         public static long INTERVAL_TIME = 5000L;
 
         // AOF文件路径；暂时写死
-        public static String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\aof.text";
+        public static String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\aof.txt";
 
     }
 }

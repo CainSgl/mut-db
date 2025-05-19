@@ -5,7 +5,6 @@ import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteSuperKey;
 import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.network.response.impl.BulkStringResponse;
 import cainsgl.core.network.response.impl.NumberResponse;
 
 import java.util.List;

@@ -1,6 +1,7 @@
 package cainsgl.core.structure.dict;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 
 public class DictHt<K, V> extends AbstractDictHt<K, V>
 {
