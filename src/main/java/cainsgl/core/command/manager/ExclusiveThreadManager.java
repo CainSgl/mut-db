@@ -4,7 +4,7 @@ import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.command.processor.nonblock.NonBlockCommandProcessor;
 import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.persistence.MutSerializer;
+import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 
@@ -19,9 +19,9 @@ public class ExclusiveThreadManager extends CommandManagerProxy
             proxyArray[i] = new ExclusiveThreadCommandProcessor(processors[i],myEventLoop);
         }
         super(proxyArray);
-        if(this instanceof MutSerializer mutSerializer)
+        if(this instanceof MutSerializable mutSerializable)
         {
-            CommandConfiguration.register(mutSerializer,myEventLoop);
+            CommandConfiguration.register(mutSerializable,myEventLoop);
         }
     }
 

@@ -1,7 +1,7 @@
-package cainsgl.core.persistence.serializer.impl;
+package cainsgl.废案.serializer_abandon.impl;
 
-import cainsgl.core.persistence.serializer.BasicValueHandler;
-import cainsgl.core.persistence.serializer.valueObj.DeserializeVO;
+import cainsgl.废案.serializer_abandon.BasicValueHandler;
+import cainsgl.废案.serializer_abandon.valueObj.DeserializeVO;
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class RedisObjSerializer {
 
     private static final Logger log = LoggerFactory.getLogger(RedisObjSerializer.class);

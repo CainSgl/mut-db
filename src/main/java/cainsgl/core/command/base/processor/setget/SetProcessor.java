@@ -21,4 +21,5 @@ public class SetProcessor extends CommandProcessor<SetGetManager>
         manager.map.put(new ByteSuperKey(args[0]), new ByteValue(args[1]));
         return RESP2Response.OK;
     }
+
 }

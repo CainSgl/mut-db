@@ -6,7 +6,7 @@ import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.persistence.MutSerializer;
+import cainsgl.core.persistence.serializer.MutSerializable;
 import io.netty.util.concurrent.Future;
 
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public abstract class ShuntCommandManager<D> implements CommandManager, ShuntManager<D>, MutSerializer {
+public abstract class ShuntCommandManager<D> implements CommandManager, ShuntManager<D>, MutSerializable {
 
     private static class ShuntCommandProcessor<M extends CommandManager> extends CommandProcessor<M> implements ShuntCaller {
 

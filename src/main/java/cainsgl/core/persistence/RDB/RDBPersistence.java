@@ -2,8 +2,8 @@ package cainsgl.core.persistence.RDB;
 
 
 import cainsgl.core.config.MutConfiguration;
-import cainsgl.core.persistence.serializer.impl.RedisObjSerializer;
-import cainsgl.core.persistence.serializer.valueObj.DeserializeVO;
+import cainsgl.废案.serializer_abandon.impl.RedisObjSerializer;
+import cainsgl.废案.serializer_abandon.valueObj.DeserializeVO;
 import cainsgl.core.persistence.test.mainMemory.Data;
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
 import org.slf4j.Logger;

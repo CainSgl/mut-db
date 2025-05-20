@@ -5,7 +5,7 @@ import cainsgl.core.command.base.manager.SimpleCommandManager;
 import cainsgl.core.command.manager.shunt.CommandShunt;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
-import cainsgl.core.persistence.MutSerializer;
+import cainsgl.core.persistence.serializer.MutSerializable;
 import io.netty.channel.EventLoop;
 
 import java.util.HashMap;
@@ -18,11 +18,11 @@ public class CommandConfiguration {
         new SimpleCommandManager();
     }
 
-    private static final Map<String, MutSerializer> COMMAND_MANAGERS = new HashMap<>();
+    private static final Map<String, MutSerializable> COMMAND_MANAGERS = new HashMap<>();
     private static final Map<String, byte[]> DESERIALIZER_MAP = new HashMap<>();
-    private static final Map<MutSerializer, EventLoop> SERIALIZER_EVENT_LOOP_MAP = new HashMap<>();
+    private static final Map<MutSerializable, EventLoop> SERIALIZER_EVENT_LOOP_MAP = new HashMap<>();
 
-    public static void register(MutSerializer manager, EventLoop eventLoop) {
+    public static void register(MutSerializable manager, EventLoop eventLoop) {
         String className = manager.getClass().getName();
         COMMAND_MANAGERS.put(className, manager);
         SERIALIZER_EVENT_LOOP_MAP.put(manager, eventLoop);
@@ -49,7 +49,7 @@ public class CommandConfiguration {
 
     public static Map<String, byte[]> getData() {
         Map<String, byte[]> data = new HashMap<>();
-        for (Map.Entry<String, MutSerializer> entry : COMMAND_MANAGERS.entrySet()) {
+        for (Map.Entry<String, MutSerializable> entry : COMMAND_MANAGERS.entrySet()) {
             data.put(entry.getKey(), entry.getValue().serialization());
         }
         return data;
