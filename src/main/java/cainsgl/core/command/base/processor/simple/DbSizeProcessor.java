@@ -23,7 +23,7 @@ public class DbSizeProcessor extends CommandProcessor<SimpleCommandManager>
     public RESP2Response execute(byte[][] args, SimpleCommandManager manager)
     {
         try{
-            return new NumberResponse( CommandConfiguration.dbSize());
+            return  NumberResponse.valueOf( CommandConfiguration.dbSize());
         }catch (Exception e){
             return new ErrorResponse("ServerError", e.getMessage());
         }

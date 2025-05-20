@@ -1,9 +1,9 @@
 package cainsgl.core.command.base.manager;
 
-import cainsgl.core.command.base.processor.setget.GetProcessor;
-import cainsgl.core.command.base.processor.setget.SetNxProcessor;
-import cainsgl.core.command.base.processor.setget.SetProcessor;
-import cainsgl.core.command.base.processor.setget.TTLProcessor;
+import cainsgl.core.command.base.processor.string.GetProcessor;
+import cainsgl.core.command.base.processor.string.SetNxProcessor;
+import cainsgl.core.command.base.processor.string.SetProcessor;
+import cainsgl.core.command.base.processor.string.TTLProcessor;
 import cainsgl.core.command.base.processor.simple.StrLenProcessor;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
@@ -17,14 +17,14 @@ import cainsgl.core.network.response.impl.BulkStringResponse;
 
 import java.util.*;
 
-public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<ByteValue>>>
+public class StringManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<ByteValue>>>
 {
-    public SetGetManager()
+    public StringManager()
     {
         super(new SetProcessor(), new GetProcessor(), new SetNxProcessor(),new TTLProcessor(),new StrLenProcessor());
     }
 
-    public SetGetManager(List<Map<ByteSuperKey, TTLObj<ByteValue>>> datas)
+    public StringManager(List<Map<ByteSuperKey, TTLObj<ByteValue>>> datas)
     {
         this();
         for (Map<ByteSuperKey, TTLObj<ByteValue>> data : datas)
@@ -60,7 +60,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<
     public final void createImpl(List<Map<ByteSuperKey, TTLObj<ByteValue>>> datas)
     {
         MutConfiguration.log.info("创建新manager");
-        new SetGetManager(datas);
+        new StringManager(datas);
     }
 
     @Override

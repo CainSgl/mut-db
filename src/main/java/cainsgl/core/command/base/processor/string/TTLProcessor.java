@@ -1,18 +1,16 @@
-package cainsgl.core.command.base.processor.setget;
+package cainsgl.core.command.base.processor.string;
 
-import cainsgl.core.command.base.manager.SetGetManager;
-import cainsgl.core.command.base.manager.SimpleCommandManager;
+import cainsgl.core.command.base.manager.StringManager;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteSuperKey;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.RESP2Response;
 import cainsgl.core.network.response.impl.NumberResponse;
-import cainsgl.core.system.GcSystem;
 
 import java.util.List;
 
-public class TTLProcessor extends CommandProcessor<SetGetManager>
+public class TTLProcessor extends CommandProcessor<StringManager>
 {
 
     public TTLProcessor()
@@ -21,13 +19,13 @@ public class TTLProcessor extends CommandProcessor<SetGetManager>
     }
 
     @Override
-    public RESP2Response execute(byte[][] args, SetGetManager manager)
+    public RESP2Response execute(byte[][] args, StringManager manager)
     {
         TTLObj<ByteValue> ttlObj = manager.map.get(new ByteSuperKey(args[0]));
         if(ttlObj!=null)
         {
-            return new NumberResponse(ttlObj.getExpireTime());
+            return  NumberResponse.valueOf(ttlObj.getExpireTime());
         }
-        return new NumberResponse(-2);
+        return  NumberResponse.valueOf(-2);
     }
 }

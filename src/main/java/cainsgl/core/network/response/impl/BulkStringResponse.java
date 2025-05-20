@@ -60,7 +60,7 @@ public class BulkStringResponse implements ElementResponse
         System.arraycopy(contentBytes, 0, respBytes, offset, contentBytes.length);
         offset += contentBytes.length;
         respBytes[offset++] = '\r';
-        respBytes[offset++] = '\n';
+        respBytes[offset] = '\n';
         this.len = respBytes.length;
     }
 

@@ -9,9 +9,17 @@ public class NumberResponse implements ElementResponse
 {
     private final byte[] respBytes;
     private final int len;
+    // 享元缓存：0-256的NumberResponse实例（含边界值）
+    private static final NumberResponse[] CACHE = new NumberResponse[257];
 
-    // 构造 long 类型数字响应（如 ":1234567890123\r\n" 或 ":-1234567890123\r\n"）
-    public NumberResponse(long number) {
+    // 静态初始化块预先生成缓存实例
+    static {
+        for (int i = 0; i <= 256; i++) {
+            CACHE[i] = new NumberResponse(i);
+        }
+    }
+
+    private NumberResponse(long number) {
         // 计算包含符号的数字字节长度（符号占1位，数字占实际位数）
         int numDigitCount = RespUtils.getDigitCount(number);
         if (number < 0) {
@@ -37,9 +45,20 @@ public class NumberResponse implements ElementResponse
         this.len = respBytes.length;
     }
 
-    public NumberResponse(int number)
+    private NumberResponse(int number)
     {
        this((long)number);
+    }
+    // 享元工厂方法（关键修改点）
+    public static NumberResponse valueOf(long number) {
+        if (number >= 0 && number <= 256) {
+            return CACHE[(int) number];  // 直接返回缓存实例
+        }
+        return new NumberResponse(number);  // 超出范围新建实例
+    }
+
+    public static NumberResponse valueOf(int number) {
+        return valueOf((long) number);
     }
 
     @Override
@@ -67,6 +86,10 @@ public class NumberResponse implements ElementResponse
         return new NumberResponse(new byte[]{':', '-', '1', '\r', '\n'}, 5);
     }
 
+    public static NumberResponse null2Response()
+    {
+        return new NumberResponse(new byte[]{':', '-', '2', '\r', '\n'}, 5);
+    }
     private NumberResponse(byte[] respBytes, int len)
     {
         this.respBytes = respBytes;

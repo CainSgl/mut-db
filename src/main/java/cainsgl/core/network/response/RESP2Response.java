@@ -9,6 +9,7 @@ public interface RESP2Response
     BulkStringResponse NIL = new BulkStringResponse(true);
     SimpleStringResponse OK = new SimpleStringResponse("OK");
     NumberResponse NONE=NumberResponse.nullResponse();
+    NumberResponse NONE2=NumberResponse.null2Response();
     byte[] getBytes();
 
 }

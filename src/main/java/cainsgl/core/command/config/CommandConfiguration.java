@@ -1,15 +1,11 @@
 package cainsgl.core.command.config;
 
-import cainsgl.core.command.base.manager.ExecuteManager;
-import cainsgl.core.command.base.manager.SetGetManager;
-import cainsgl.core.command.base.manager.SimpleCommandManager;
+import cainsgl.core.command.base.manager.*;
 import cainsgl.core.command.manager.CommandManager;
 import cainsgl.core.command.manager.shunt.CommandShunt;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.response.ElementResponse;
-import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.network.response.impl.ArrayResponse;
 import cainsgl.core.network.response.impl.BulkStringResponse;
 import cainsgl.core.network.response.impl.LazyArrayResponse;
 import cainsgl.core.persistence.MutSerializer;
@@ -17,7 +13,6 @@ import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 import io.netty.util.concurrent.Promise;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +23,12 @@ public class CommandConfiguration
 {
     public CommandConfiguration()
     {
-        new SetGetManager();
+        new StringManager();
         new SimpleCommandManager();
         new ExecuteManager();
+        new HashManager();
+        new ListManager();
+        new BigMapManager();
         //释放序列化数据
         DESERIALIZER_MAP = null;
     }

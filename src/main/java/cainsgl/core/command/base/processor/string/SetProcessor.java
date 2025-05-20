@@ -1,6 +1,6 @@
-package cainsgl.core.command.base.processor.setget;
+package cainsgl.core.command.base.processor.string;
 
-import cainsgl.core.command.base.manager.SetGetManager;
+import cainsgl.core.command.base.manager.StringManager;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteSuperKey;
 import cainsgl.core.data.ttl.TTLObj;
@@ -11,7 +11,7 @@ import cainsgl.core.network.response.impl.NumberResponse;
 
 import java.util.List;
 
-public class SetProcessor extends CommandProcessor<SetGetManager>
+public class SetProcessor extends CommandProcessor<StringManager>
 {
     public SetProcessor()
     {
@@ -19,7 +19,7 @@ public class SetProcessor extends CommandProcessor<SetGetManager>
     }
 
     @Override
-    public RESP2Response execute(byte[][] args, SetGetManager manager)
+    public RESP2Response execute(byte[][] args, StringManager manager)
     {
         ByteSuperKey key = new ByteSuperKey(args[0]);
         //看有没有nx或ex
@@ -33,16 +33,16 @@ public class SetProcessor extends CommandProcessor<SetGetManager>
                 {
                     //赋值
                     manager.map.put(key, manager.createTTL( new ByteValue(args[1])));
-                    return new NumberResponse(1);
+                    return  NumberResponse.valueOf(1);
                 }else
                 {
-                    return new NumberResponse(0);
+                    return  NumberResponse.valueOf(0);
                 }
             }else
             {
                 //忽略
                 manager.map.put(key, manager.createTTL( new ByteValue(args[1])));
-                return new NumberResponse(0);
+                return  NumberResponse.valueOf(0);
             }
         }
         if(args.length==4)
@@ -74,10 +74,10 @@ public class SetProcessor extends CommandProcessor<SetGetManager>
                 manager.map.put(key, manager.createTTL(l, new ByteValue(args[1]), (_) -> {
                     manager.map.remove(key);
                 }));
-                return new NumberResponse(1);
+                return  NumberResponse.valueOf(1);
             }else
             {
-                return new NumberResponse(0);
+                return  NumberResponse.valueOf(0);
             }
 
         }
