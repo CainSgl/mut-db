@@ -1,5 +1,6 @@
 package cainsgl.core.system.thread;
 
+import cainsgl.core.command.manager.CommandManager;
 import cainsgl.core.config.MutConfiguration;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.DefaultEventLoop;
@@ -7,6 +8,9 @@ import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ThreadManager
@@ -42,10 +46,10 @@ public class ThreadManager
         }
         SERVER_BOSS_GROUP = new NioEventLoopGroup(1, new DefaultThreadFactory("BossGroup", Thread.NORM_PRIORITY));
         SERVER_WORKER_GROUP = new NioEventLoopGroup(workThreads, new DefaultThreadFactory("HandlerGroup", Thread.NORM_PRIORITY));
-        GC_WORKER_GROUP = new EventLoop[gcThreads2];
-        for (int i = 0; i < gcThreads2; i++)
+        GC_WORKER_GROUP=new EventLoop[gcThreads2];
+        for(int i=0;i<gcThreads2;i++)
         {
-            GC_WORKER_GROUP[i] = new DefaultEventLoop(new DefaultThreadFactory("GCWorkerGroup:" + i, Thread.NORM_PRIORITY));
+          GC_WORKER_GROUP[i]=new DefaultEventLoop(new DefaultThreadFactory("gcWorker"+i, Thread.NORM_PRIORITY));
         }
         gcThreads = gcThreads2;
         if (MutConfiguration.autoScalingThread)
@@ -80,9 +84,10 @@ public class ThreadManager
     {
         return threadController.getEventLoopGroup(threadsNum);
     }
+
     public static void backLoopGroup(EventLoopGroup eventLoopGroup)
     {
-         threadController.backLoopGroup(eventLoopGroup);
+        threadController.backLoopGroup(eventLoopGroup);
     }
 
 
@@ -94,6 +99,21 @@ public class ThreadManager
         {
             eventExecutors.shutdownGracefully();
         }
+    }
+
+    private static final Map<CommandManager,EventLoop> MANAGER_EVENT_LOOP_MAP = new HashMap<CommandManager,EventLoop>();
+    public static void register(CommandManager manager,EventLoop workLoop)
+    {
+        MANAGER_EVENT_LOOP_MAP.put(manager,workLoop);
+    }
+    public static void unRegister(CommandManager manager)
+    {
+        EventLoop remove = MANAGER_EVENT_LOOP_MAP.remove(manager);
+        backEventLoop(remove);
+    }
+    public static EventLoop getLoopByManager(CommandManager manager)
+    {
+        return MANAGER_EVENT_LOOP_MAP.get(manager);
     }
 
     public static boolean hasFakeThread()

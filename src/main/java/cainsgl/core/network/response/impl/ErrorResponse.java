@@ -55,6 +55,6 @@ public class ErrorResponse implements ElementResponse
     @Override
     public byte[] getBytes()
     {
-        return Arrays.copyOf(respBytes, respBytes.length);
+        return respBytes;
     }
 }

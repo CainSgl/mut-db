@@ -17,4 +17,6 @@ public interface ShuntManager<D>
 
 
     Future<D> destory();
+
+    void exceptionCaught(Exception cause);
 }

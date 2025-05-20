@@ -40,6 +40,7 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
             //   return null;
             throw new UnsupportedOperationException("不支持直接调用分流器的execute");
         }
+
         //最终被执行的
         @Override
         public void submit(byte[][] args, Consumer<RESP2Response> consumer, M manager)
@@ -55,6 +56,7 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
     }
 
     private static final Map<Class<?>, CommandShunt> SHUNT_MAP = new HashMap<>();
+
     @SafeVarargs
     public ShuntCommandManager(CommandProcessor... processors)
     {
@@ -68,13 +70,15 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
             {
                 new ShuntCommandProcessor<>(processor, commandShunt);
             }
-        //    commandShunt.addProcessors(this, processors);
+            //    commandShunt.addProcessors(this, processors);
             SHUNT_MAP.put(myClass, commandShunt);
-            CommandConfiguration.register(commandShunt,this);
+            CommandConfiguration.register(commandShunt, this);
+            CommandConfiguration.register(this);
         } else
         {
             //第二次进来，直接往ShuntCommand里添加数据
             MutConfiguration.log.info("a command overload,expanding it.");
+            CommandConfiguration.register(this);
             commandShunt.addProcessors(this, processors);
         }
     }
@@ -103,7 +107,6 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
     {
         throw new UnsupportedOperationException("不支持直接使用ShuntCommandManager");
     }
-
 
 
     public abstract Integer overLoadImpl();

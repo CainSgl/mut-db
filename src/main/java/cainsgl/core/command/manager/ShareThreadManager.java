@@ -8,7 +8,7 @@ import cainsgl.core.persistence.MutSerializer;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 
-public class ShareThreadManager extends CommandManagerProxy
+public  class ShareThreadManager extends CommandManagerProxy
 {
     public ShareThreadManager(CommandProcessor<?>... processors)
     {
@@ -18,13 +18,14 @@ public class ShareThreadManager extends CommandManagerProxy
             proxyArray[i] = new ShareThreadCommandProcessor(processors[i]);
         }
         super(proxyArray);
+        ThreadManager.register(this,SHARE_LOOP);
         if(this instanceof MutSerializer mutSerializer)
         {
             CommandConfiguration.register(mutSerializer,SHARE_LOOP);
         }
     }
 
-    private static class ShareThreadCommandProcessor<T> extends NonBlockCommandProcessor<T>
+    private static class ShareThreadCommandProcessor<T extends CommandManager> extends NonBlockCommandProcessor<T >
     {
         private final CommandProcessor<T> proxy;
 

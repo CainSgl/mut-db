@@ -27,8 +27,8 @@ public class CommandProcessorProxy<T> extends CommandProcessor<T>
     }
 
     @Override
-    public void submit(byte[][] args, Consumer<RESP2Response> consumer,T manager)
+    public void submit(byte[][] args, Consumer<RESP2Response> consumer, T manager)
     {
-        proxy.submit(args, consumer,commandManager);
+        proxy.submit(args, consumer, commandManager);
     }
 }

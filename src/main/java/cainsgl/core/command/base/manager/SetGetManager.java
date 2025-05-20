@@ -3,44 +3,47 @@ package cainsgl.core.command.base.manager;
 import cainsgl.core.command.base.processor.setget.GetProcessor;
 import cainsgl.core.command.base.processor.setget.SetNxProcessor;
 import cainsgl.core.command.base.processor.setget.SetProcessor;
+import cainsgl.core.command.base.processor.setget.TTLProcessor;
+import cainsgl.core.command.base.processor.simple.StrLenProcessor;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
 
 import cainsgl.core.data.key.ByteSuperKey;
+import cainsgl.core.data.ttl.TTLObj;
+
 import cainsgl.core.data.value.ByteValue;
+import cainsgl.core.network.response.ElementResponse;
+import cainsgl.core.network.response.impl.BulkStringResponse;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteValue>>
+public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<ByteValue>>>
 {
     public SetGetManager()
     {
-        super(new SetProcessor(), new GetProcessor(), new SetNxProcessor());
+        super(new SetProcessor(), new GetProcessor(), new SetNxProcessor(),new TTLProcessor(),new StrLenProcessor());
     }
 
-    public SetGetManager(List<Map<ByteSuperKey, ByteValue>> datas)
+    public SetGetManager(List<Map<ByteSuperKey, TTLObj<ByteValue>>> datas)
     {
         this();
-        for (Map<ByteSuperKey, ByteValue> data : datas)
+        for (Map<ByteSuperKey, TTLObj<ByteValue>> data : datas)
         {
             map.putAll(data);
         }
     }
 
-    public Map<ByteSuperKey, ByteValue> map = new HashMap<>();
+    public Map<ByteSuperKey, TTLObj<ByteValue>> map = new HashMap<>();
 
     @Override
-    public Map<ByteSuperKey, ByteValue> separateImpl()
+    public Map<ByteSuperKey, TTLObj<ByteValue>> separateImpl()
     {
         MutConfiguration.log.info("开始分裂");
-        Map<ByteSuperKey, ByteValue> result = new HashMap<>();
-        Iterator<Map.Entry<ByteSuperKey, ByteValue>> iterator = map.entrySet().iterator();
+        Map<ByteSuperKey, TTLObj<ByteValue>> result = new HashMap<>();
+        Iterator<Map.Entry<ByteSuperKey, TTLObj<ByteValue>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext())
         {
-            Map.Entry<ByteSuperKey, ByteValue> entry = iterator.next();
+            Map.Entry<ByteSuperKey, TTLObj<ByteValue>> entry = iterator.next();
             ByteSuperKey key = entry.getKey();
             if (!testKey(key.getBytes()))
             {
@@ -54,7 +57,7 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     }
 
     @Override
-    public final void createImpl(List<Map<ByteSuperKey, ByteValue>> datas)
+    public final void createImpl(List<Map<ByteSuperKey, TTLObj<ByteValue>>> datas)
     {
         MutConfiguration.log.info("创建新manager");
         new SetGetManager(datas);
@@ -67,10 +70,10 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     }
 
     @Override
-    public void addData(Map<ByteSuperKey, ByteValue> data)
+    public void addData(Map<ByteSuperKey, TTLObj<ByteValue>> data)
     {
         MutConfiguration.log.info("开始合并");
-        for (Map.Entry<ByteSuperKey, ByteValue> entry : map.entrySet())
+        for (Map.Entry<ByteSuperKey, TTLObj<ByteValue>> entry : map.entrySet())
         {
             ByteSuperKey key = entry.getKey();
             if (testKey(key.getBytes()))
@@ -84,11 +87,22 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     }
 
     @Override
-    public Map<ByteSuperKey, ByteValue> destoryImpl()
+    public Map<ByteSuperKey, TTLObj<ByteValue>> destoryImpl()
     {
         return map;
     }
 
+    @Override
+    public List<ElementResponse> scanData()
+    {
+        List<ElementResponse> result = new ArrayList<>();
+        for (Map.Entry<ByteSuperKey, TTLObj<ByteValue>> entry : map.entrySet())
+        {
+            ByteSuperKey key = entry.getKey();
+            result.add(new BulkStringResponse(key.getBytes()));
+        }
+        return result;
+    }
 
     @Override
     public byte[] serialization()
@@ -100,5 +114,11 @@ public class SetGetManager extends ShuntCommandManager<Map<ByteSuperKey, ByteVal
     public void deSerializer(byte[] data)
     {
 
+    }
+
+    @Override
+    public void exceptionCaught(Exception e)
+    {
+        MutConfiguration.log.error(e.getMessage(),e);
     }
 }

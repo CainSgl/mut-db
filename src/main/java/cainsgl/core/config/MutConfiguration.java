@@ -7,32 +7,33 @@ import org.slf4j.LoggerFactory;
 public class MutConfiguration
 {
     public static final Logger log = LoggerFactory.getLogger(MutServer.class);
-    public static final Integer port=6379;
-    public static final Integer backlog=128;
-    public static final Integer workThreads=2;
-    public static final Integer gcThreads=1;
+    public static final Integer port = 6379;
+    public static final Integer backlog = 128;
+    public static final Integer workThreads = 2;
+    public static final Integer gcThreads = 2;
     //哨兵模式
-    public static final Boolean SentinelActivate=true;
+    public static final Boolean SentinelActivate = true;
     //假线程数量
-    public static final Boolean autoScalingThread=true;
+    public static final Boolean autoScalingThread = true;
     //初始化hashtable的链表长度
-    public static final int initial_capacity=2;
+    public static final int initial_capacity = 2;
     //设置hashtable的负载因子最大
-    public static final float MAX_Load_Factor=2f;
+    public static final float MAX_Load_Factor = 2f;
     //设置hashtable的负载因子最小
-    public static final float MIN_Load_Factor=0.5f;
+    public static final float MIN_Load_Factor = 0.5f;
 
     //分流器线程大小
-    public static final int shuntThreads=2;
+    public static final int shuntThreads = 2;
 
     //5个key就分裂
-    public static final int MAX_OVER_LOAD=3;
-    public static final int MIN_OVER_LOAD=1;
+    public static final int MAX_OVER_LOAD = 3;
+    public static final int MIN_OVER_LOAD = 1;
     //一次rehash的次数
     public static final int rehashNum = 6;
 
     // RDB相关配置
-    public static class RDB{
+    public static class RDB
+    {
 
         // 执行RDB间隔单位时间 单位毫秒
         public static long INTERVAL_TIME = 2000L;
@@ -51,7 +52,8 @@ public class MutConfiguration
 
     }
 
-    public static class AOF{
+    public static class AOF
+    {
 
         // 每一个独立缓冲区的内存大小
         public static int BUFFER_SIZE = 1024 * 512; // 500KB(约为50万字节)
@@ -65,5 +67,15 @@ public class MutConfiguration
         // AOF文件路径；暂时写死
         public static String FILE_NAME = "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\aof.text";
 
+    }
+
+    public static class GC
+    {
+        //时间片轮数，必须是2的n次方
+        public static final int DEFAULT_SLOTS = 1024;
+        //一个插槽的时间
+        public static final int TICK_DURATION = 10;
+
+        public static final int UNIT_UPDATE_TIME = 5;
     }
 }
