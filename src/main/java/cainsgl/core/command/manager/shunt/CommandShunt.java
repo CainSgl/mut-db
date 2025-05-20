@@ -89,7 +89,7 @@ public class CommandShunt implements MutSerializable
                 {
                     //说明数据不足了，必须等待
                     manager.create();
-                    serializerThread.compareAndSet(null,Thread.currentThread());
+                    serializerThread.compareAndSet(null, Thread.currentThread());
                     LockSupport.park();
                 }
                 //这里是被唤醒和数据充足的时候，说明肯定都行
@@ -97,7 +97,7 @@ public class CommandShunt implements MutSerializable
                 {
                     //防止虚假唤醒
                     MutConfiguration.log.info("CommandShunt里在没有添加的数据情况下被唤醒");
-                    serializerThread.compareAndSet(null,Thread.currentThread());
+                    serializerThread.compareAndSet(null, Thread.currentThread());
                     LockSupport.park();
                 }
                 processors[0].get(count).manager.deSerializer(result.get(count));
@@ -127,7 +127,13 @@ public class CommandShunt implements MutSerializable
         {
             eventLoop.execute(() ->
             {
-                consumer.accept(proxy.execute(args, manager.proxy));
+                try{
+                    RESP2Response execute = proxy.execute(args, manager.proxy);
+                    consumer.accept(execute);
+                }catch (Exception e)
+                {
+                    manager.exceptionCaught(e);
+                }
             });
         }
 
@@ -147,9 +153,17 @@ public class CommandShunt implements MutSerializable
         public ShuntManagerProxy(ShuntCommandManager<D> shuntCommandManager, EventLoop eventLoop)
         {
             this.proxy = shuntCommandManager;
+            ThreadManager.register(proxy, eventLoop);
             this.eventLoop = eventLoop;
         }
-
+        @Override
+        public final void exceptionCaught(Exception e)
+        {
+            eventLoop.execute(() ->
+            {
+                proxy.exceptionCaught(e);
+            });
+        }
         @SafeVarargs
         @Override
         public final void create(D... data)
@@ -200,7 +214,7 @@ public class CommandShunt implements MutSerializable
             Promise<D> promise = eventLoop.newPromise();
             eventLoop.submit(() -> {
                 promise.setSuccess(proxy.destoryImpl());
-                ThreadManager.backEventLoop(eventLoop);
+                ThreadManager.unRegister(proxy);
             });
             return promise;
         }
@@ -310,7 +324,7 @@ public class CommandShunt implements MutSerializable
                     }
                     ShuntManagerProxy manager = executors.getFirst().manager;
                     manager.create(datas);
-                } else if (AlloverLoad / size < MutConfiguration.MIN_OVER_LOAD)
+                } else if (size>3&&AlloverLoad / size < MutConfiguration.MIN_OVER_LOAD)
                 {
                     //销毁最后一个
                     for (int i = 0; i < size; i++)
@@ -364,7 +378,7 @@ public class CommandShunt implements MutSerializable
                     {
                         throw new RuntimeException("在再次构建manager的时候，你的processor的顺序与第一次不符合");
                     }
-                    {processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop));}
+                    processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop));
                 }
             } catch (ArrayIndexOutOfBoundsException e)
             {

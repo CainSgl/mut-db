@@ -16,7 +16,7 @@ public class CommandProcessor2 extends cainsgl.core.command.processor.CommandPro
 {
     public CommandProcessor2()
     {
-        super(0, 0, "COMMAND", List.of("null"));
+        super(0, 0, "COMMAND", List.of());
     }
 
     @Override

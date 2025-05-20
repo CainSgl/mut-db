@@ -12,11 +12,16 @@ public class NetWorkConfig
     private static final Map<ByteFastIgnoreCaseKey, CommandProcessor<?>> commandMap=new HashMap<>();
     public static  void register(byte[] key, CommandProcessor<?> executor)
     {
-        commandMap.put(new ByteFastIgnoreCaseKey(key),executor);
+        ByteFastIgnoreCaseKey byteFastIgnoreCaseKey = new ByteFastIgnoreCaseKey(key);
+        if(commandMap.containsKey(byteFastIgnoreCaseKey))
+        {
+            throw new IllegalArgumentException("不能添加重复的命令:"+new String(key,StandardCharsets.UTF_8));
+        }
+        commandMap.put(byteFastIgnoreCaseKey,executor);
     }
     public static  void register(String command, CommandProcessor<?> executor)
     {
-        commandMap.put(new ByteFastIgnoreCaseKey(command.getBytes(StandardCharsets.UTF_8)),executor);
+        register(command.getBytes(StandardCharsets.UTF_8),executor);
     }
 
     public static CommandProcessor<?> getCmd(byte[] key)

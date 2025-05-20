@@ -4,11 +4,12 @@ import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.command.processor.nonblock.NonBlockCommandProcessor;
 import cainsgl.core.network.response.RESP2Response;
+
 import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 
-public class ShareThreadManager extends CommandManagerProxy
+public  class ShareThreadManager extends CommandManagerProxy
 {
     public ShareThreadManager(CommandProcessor<?>... processors)
     {
@@ -18,13 +19,14 @@ public class ShareThreadManager extends CommandManagerProxy
             proxyArray[i] = new ShareThreadCommandProcessor(processors[i]);
         }
         super(proxyArray);
-        if(this instanceof MutSerializable mutSerializable)
+        ThreadManager.register(this,SHARE_LOOP);
+        if(this instanceof MutSerializable mutSerializer)
         {
-            CommandConfiguration.register(mutSerializable,SHARE_LOOP);
+            CommandConfiguration.register(mutSerializer,SHARE_LOOP);
         }
     }
 
-    private static class ShareThreadCommandProcessor<T> extends NonBlockCommandProcessor<T>
+    private static class ShareThreadCommandProcessor<T extends CommandManager> extends NonBlockCommandProcessor<T >
     {
         private final CommandProcessor<T> proxy;
 

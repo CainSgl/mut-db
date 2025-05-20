@@ -1,10 +1,13 @@
 package cainsgl.core.command.manager;
 
 
+import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.command.processor.CommandProcessorProxy;
+import cainsgl.core.config.MutConfiguration;
 
-public class CommandManagerProxy implements CommandManager
+
+public  class CommandManagerProxy implements CommandManager
 {
 
     @SafeVarargs
@@ -15,6 +18,12 @@ public class CommandManagerProxy implements CommandManager
         {
             new CommandProcessorProxy<>(this, processor);
         }
+        CommandConfiguration.register(this);
+    }
 
+    @Override
+    public void exceptionCaught(Exception e)
+    {
+        MutConfiguration.log.error("未捕获的异常",e);
     }
 }

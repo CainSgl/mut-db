@@ -11,7 +11,7 @@ public class ArrayResponse implements ElementResponse
     int len;
     private static final byte separator = '*';
 
-    public ArrayResponse(ElementResponse[] elements)
+    public ArrayResponse(ElementResponse... elements)
     {
         int elementCount = elements.length;
         int totalHeaderLen = 1 + RespUtils.getDigitCount(elementCount) + 2;
@@ -34,7 +34,6 @@ public class ArrayResponse implements ElementResponse
         ElementResponse[] array = elements.toArray(new ElementResponse[0]);
         this(array);
     }
-
     private int writeHeader(int elementCount, byte[] dest, int offset)
     {
         dest[offset++] = '*';

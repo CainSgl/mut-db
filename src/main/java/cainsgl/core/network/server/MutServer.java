@@ -3,6 +3,7 @@ package cainsgl.core.network.server;
 import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.excepiton.MutServerStartException;
+import cainsgl.core.system.GcSystem;
 import cainsgl.core.system.Stopable;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.bootstrap.ServerBootstrap;
@@ -39,7 +40,7 @@ public class MutServer implements Stopable
                     .option(ChannelOption.SO_BACKLOG, MutConfiguration.backlog)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             channelFuture= bootstrap.bind(MutConfiguration.port).sync();
-            MutConfiguration.log.info("MutServer started in port "+MutConfiguration.port);
+            MutConfiguration.log.info("MutServer started in port "+MutConfiguration.port+" startTime:"+   GcSystem.SERVER_START_TIME);
             init(classLoader);
             channelFuture.channel().closeFuture().sync();
         }catch (Exception e)

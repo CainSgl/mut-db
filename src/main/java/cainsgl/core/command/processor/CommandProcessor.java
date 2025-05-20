@@ -55,7 +55,7 @@ public abstract class CommandProcessor<T>
 
     public abstract RESP2Response execute(byte[][] args, T manager);
 
-    public void submit(byte[][] args, Consumer<RESP2Response> consumer,T manager)
+    public void submit(byte[][] args, Consumer<RESP2Response> consumer, T manager)
     {
         throw new UnsupportedOperationException("无法提交任务，因为没有单独的线程");
     }

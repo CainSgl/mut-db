@@ -4,11 +4,12 @@ import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.command.processor.nonblock.NonBlockCommandProcessor;
 import cainsgl.core.network.response.RESP2Response;
+
 import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 
-public class ExclusiveThreadManager extends CommandManagerProxy
+public  class ExclusiveThreadManager extends CommandManagerProxy
 {
     public ExclusiveThreadManager(CommandProcessor<?>... processors)
     {
@@ -19,13 +20,14 @@ public class ExclusiveThreadManager extends CommandManagerProxy
             proxyArray[i] = new ExclusiveThreadCommandProcessor(processors[i],myEventLoop);
         }
         super(proxyArray);
-        if(this instanceof MutSerializable mutSerializable)
+        ThreadManager.register(this,myEventLoop);
+        if(this instanceof MutSerializable mutSerializer)
         {
-            CommandConfiguration.register(mutSerializable,myEventLoop);
+            CommandConfiguration.register(mutSerializer,myEventLoop);
         }
     }
 
-    private static class ExclusiveThreadCommandProcessor<T> extends NonBlockCommandProcessor<T>
+    private static class ExclusiveThreadCommandProcessor<T extends CommandManager> extends NonBlockCommandProcessor<T>
     {
         private final CommandProcessor<T> proxy;
 
@@ -40,7 +42,6 @@ public class ExclusiveThreadManager extends CommandManagerProxy
         {
             return proxy.execute(args, manager);
         }
-
     }
 
 }

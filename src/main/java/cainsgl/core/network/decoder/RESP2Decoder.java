@@ -23,6 +23,8 @@ public class RESP2Decoder extends ByteToMessageDecoder
     private List<byte[]> results;
     private int currentElementIndex = 0;
 
+
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
     {
@@ -150,7 +152,7 @@ public class RESP2Decoder extends ByteToMessageDecoder
         return result;
     }
 
-    private void reset()
+    public void reset()
     {
         state = State.PARSE_ARRAY_HEADER;
         arrayLength = -1;

@@ -27,8 +27,6 @@ public class ByteValue extends AbstractByteObj
        throw new UnsupportedOperationException("不支持value计算hashcode，请使用ByteKey");
     }
 
-
-
     @Override
     public byte[] getBytes()
     {

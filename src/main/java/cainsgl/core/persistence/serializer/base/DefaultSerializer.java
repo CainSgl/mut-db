@@ -1,7 +1,7 @@
 package cainsgl.core.persistence.serializer.base;
 
 import cainsgl.core.persistence.serializer.MutSerializable;
-import cainsgl.core.persistence.serializer.MutSerializer;
+
 import cainsgl.core.persistence.serializer.converter.byteConverter.ByteConverterRegistry;
 import cainsgl.core.persistence.serializer.util.SeriUtil;
 import org.slf4j.Logger;
