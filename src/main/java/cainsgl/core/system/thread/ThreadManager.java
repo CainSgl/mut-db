@@ -2,7 +2,6 @@ package cainsgl.core.system.thread;
 
 import cainsgl.core.command.manager.CommandManager;
 import cainsgl.core.config.MutConfiguration;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;

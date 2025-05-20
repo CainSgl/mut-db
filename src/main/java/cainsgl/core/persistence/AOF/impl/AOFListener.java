@@ -1,4 +1,4 @@
-package cainsgl.core.persistence.AOF;
+package cainsgl.core.persistence.AOF.impl;
 
 
 import cainsgl.core.config.MutConfiguration;
@@ -17,13 +17,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/*
+* AOF_同步刷盘
+* */
 public class AOFListener {
     private static final Logger log = LogManager.getLogger(AOFListener.class);
 
     public static final int SET_BUFFER_POSITION = 0;
     public static final int LIST_BUFFER_POSITION = 1;
 
-    // 堆内存的分配大小 500KB（约50万字节）
+    // 堆内存的分配大小
     private static final int bufferSize = MutConfiguration.AOF.BUFFER_SIZE;
     // 独立缓冲区的个数
     private static final int bufferCount = MutConfiguration.AOF.BUFFER_COUNT;
@@ -56,7 +59,7 @@ public class AOFListener {
         }, 0, intervalTime, TimeUnit.MILLISECONDS);
     }
 
-    public static void triggerAof(byte[] cmd, byte[][] args){
+    public static void addCommand(byte[] cmd, byte[][] args){
         // 向缓冲区写命令信息
     }
 
@@ -68,7 +71,7 @@ public class AOFListener {
         ByteBuffer buffer = buffers[bufferPosition];
         if((buffer.remaining() - 100) < (key.getBytes().length + value.length + expire.toString().getBytes().length)){
             // 缓冲区内存即将耗尽；强制触发刷盘；仅刷新该缓冲区的数据到磁盘
-            flushOnBufferPosition(bufferPosition);
+            flushWithBufferPosition(bufferPosition);
         }
         buffer.putInt(key.getBytes().length);
         buffer.put(key.getBytes());
@@ -77,7 +80,8 @@ public class AOFListener {
         buffer.putLong(expire);
     }
 
-    private static void flushOnBufferPosition(int bufferPosition) {
+    // 刷入指定缓冲区的数据到磁盘
+    private static void flushWithBufferPosition(int bufferPosition) {
         ByteBuffer buffer = buffers[bufferPosition];
         buffer.flip();
         try (FileChannel fileChannel = new FileOutputStream(fileName, true).getChannel()) {
@@ -90,9 +94,10 @@ public class AOFListener {
         }
     }
 
+    // 将所有缓冲区的数据刷入磁盘
     private static void flushAll() {
         for (int i = 0; i < buffers.length; i++) {
-            flushOnBufferPosition(i);
+            flushWithBufferPosition(i);
         }
     }
 

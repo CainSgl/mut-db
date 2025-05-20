@@ -2,7 +2,6 @@ package cainsgl.core.command.base.processor.simple;
 
 import cainsgl.core.command.base.manager.SimpleCommandManager;
 import cainsgl.core.data.key.ByteFastIgnoreCaseKey;
-import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.ElementResponse;
 import cainsgl.core.network.response.RESP2Response;

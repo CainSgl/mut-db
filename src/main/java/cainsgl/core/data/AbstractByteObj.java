@@ -1,7 +1,5 @@
 package cainsgl.core.data;
 
-import cainsgl.core.data.key.ByteFastKey;
-
 public abstract class AbstractByteObj implements ByteObj
 {
     private static int id = -1;

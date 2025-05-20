@@ -1,7 +1,6 @@
 package cainsgl.core.persistence.RDB;
 
 import cainsgl.core.config.MutConfiguration;
-import cainsgl.core.system.thread.ThreadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

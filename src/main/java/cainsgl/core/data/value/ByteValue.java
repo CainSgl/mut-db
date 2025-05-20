@@ -1,11 +1,8 @@
 package cainsgl.core.data.value;
 
 import cainsgl.core.data.AbstractByteObj;
-import cainsgl.core.data.ByteObj;
-import cainsgl.core.data.key.ByteSuperKey;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class ByteValue extends AbstractByteObj
 {

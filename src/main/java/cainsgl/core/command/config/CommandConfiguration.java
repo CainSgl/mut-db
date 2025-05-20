@@ -8,7 +8,9 @@ import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.response.ElementResponse;
 import cainsgl.core.network.response.impl.BulkStringResponse;
 import cainsgl.core.network.response.impl.LazyArrayResponse;
-import cainsgl.core.persistence.MutSerializer;
+
+import cainsgl.core.persistence.serializer.MutSerializable;
+
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 import io.netty.util.concurrent.Promise;
@@ -33,9 +35,9 @@ public class CommandConfiguration
         DESERIALIZER_MAP = null;
     }
 
-    private static final Map<String, MutSerializer> COMMAND_MANAGERS = new HashMap<>();
+    private static final Map<String, MutSerializable> COMMAND_MANAGERS = new HashMap<>();
     private static Map<String, byte[]> DESERIALIZER_MAP = new HashMap<>();
-    private static final Map<MutSerializer, EventLoop> SERIALIZER_EVENT_LOOP_MAP = new HashMap<>();
+    private static final Map<MutSerializable, EventLoop> SERIALIZER_EVENT_LOOP_MAP = new HashMap<>();
     private static final List<CommandManager> commandManagers = new ArrayList<>();
     //注册所有的commandManger，用于执行scan
     public static void register(CommandManager commandManager)
@@ -124,7 +126,7 @@ public class CommandConfiguration
         return res;
     }
     //注册序列化，用于RDB
-    public static void register(MutSerializer manager, EventLoop eventLoop)
+    public static void register(MutSerializable manager, EventLoop eventLoop)
     {
         String className = manager.getClass().getName();
         COMMAND_MANAGERS.put(className, manager);
@@ -158,9 +160,9 @@ public class CommandConfiguration
     {
 
         Map<String, byte[]> data = new HashMap<>();
-        for (Map.Entry<String, MutSerializer> entry : COMMAND_MANAGERS.entrySet())
+        for (Map.Entry<String, MutSerializable> entry : COMMAND_MANAGERS.entrySet())
         {
-            MutSerializer value = entry.getValue();
+            MutSerializable value = entry.getValue();
             EventLoop eventExecutors = SERIALIZER_EVENT_LOOP_MAP.get(value);
             Promise<byte[]> promise = eventExecutors.newPromise();
             eventExecutors.submit(() -> {

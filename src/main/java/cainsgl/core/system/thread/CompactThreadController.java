@@ -4,9 +4,6 @@ import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
-import io.netty.util.concurrent.DefaultThreadFactory;
-
-import static cainsgl.core.system.thread.ThreadManager.SERVER_WORKER_GROUP;
 
 public class CompactThreadController implements ThreadController
 {

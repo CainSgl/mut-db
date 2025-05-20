@@ -1,6 +1,8 @@
 package cainsgl.core.structure.dict;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractDict<K, V> implements Map<K, V>
 {

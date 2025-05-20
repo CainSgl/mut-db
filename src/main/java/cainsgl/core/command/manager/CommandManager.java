@@ -2,10 +2,7 @@ package cainsgl.core.command.manager;
 
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.network.response.ElementResponse;
-import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.network.response.impl.ArrayResponse;
-import cainsgl.core.persistence.MutSerializer;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+
 
 import java.util.List;
 import java.util.function.Consumer;

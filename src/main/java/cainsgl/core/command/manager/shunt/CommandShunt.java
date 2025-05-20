@@ -4,7 +4,7 @@ import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.persistence.MutSerializer;
+import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.system.thread.ThreadManager;
 import cainsgl.core.utils.SerialiUtil;
 import io.netty.channel.EventLoop;
@@ -14,12 +14,11 @@ import io.netty.util.concurrent.Promise;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 
-public class CommandShunt implements MutSerializer
+public class CommandShunt implements MutSerializable
 {
     private final List<CommandShuntComponent>[] processors;
     private final EventLoopGroup WORK_GROUP;
@@ -146,7 +145,7 @@ public class CommandShunt implements MutSerializer
         }
     }
 
-    private static class ShuntManagerProxy<D> implements ShuntManager<D>, MutSerializer
+    private static class ShuntManagerProxy<D> implements ShuntManager<D>, MutSerializable
     {
         public final ShuntCommandManager<D> proxy;
         final EventLoop eventLoop;
@@ -399,7 +398,6 @@ public class CommandShunt implements MutSerializer
         });
     }
 
-
 //        WORK_GROUP.submit(()->{
 //            int index = caller.inManagerIndex;
 //            List<CommandProcessor<? extends  CommandManager>> executor = processors[index];
@@ -467,7 +465,6 @@ public class CommandShunt implements MutSerializer
 //            }
 //        });
 //    }
-
 
     int idRecord = -1;
 

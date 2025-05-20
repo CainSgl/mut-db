@@ -1,6 +1,6 @@
 package cainsgl.core.persistence.test.command;
 
-import cainsgl.core.persistence.AOF.AOFListener;
+import cainsgl.core.persistence.AOF.impl.AOFListener;
 import cainsgl.core.persistence.RDB.RDBListener;
 import cainsgl.core.persistence.test.mainMemory.Data;
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
