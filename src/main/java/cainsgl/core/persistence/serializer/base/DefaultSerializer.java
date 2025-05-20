@@ -200,16 +200,13 @@ public class DefaultSerializer {
         return res;
     }
 
+
 //-----                          建造者模式设置参数                              -----//
-    public DefaultSerializer keyClassName(String keyClassName) {
+    public DefaultSerializer setClassName(String keyClassName, String valueClassName){
         this.keyClassName = keyClassName;
-        return this;
-    }
-    public DefaultSerializer valueClassName(String valueClassName) {
         this.valueClassName = valueClassName;
         return this;
     }
-
 
 
 //-----                           基础方法                                        -----//

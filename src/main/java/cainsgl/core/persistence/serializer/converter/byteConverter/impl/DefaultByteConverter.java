@@ -8,6 +8,7 @@ import java.io.*;
 
 /*
 * 默认序列化器 - 使用Java原生序列化机制
+* NOTE 因为默认序列化器使用的是Java原生的序列化工具；所以对应的类需要实现Java的Serializable接口
 * */
 public class DefaultByteConverter<T> implements ByteConverter<T> {
     private static final Logger log = LoggerFactory.getLogger(DefaultByteConverter.class);

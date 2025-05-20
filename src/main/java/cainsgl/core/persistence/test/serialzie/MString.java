@@ -2,19 +2,11 @@ package cainsgl.core.persistence.test.serialzie;
 
 import cainsgl.core.persistence.serializer.MutSerializable;
 
-public class MString implements MutSerializable {
+import java.io.Serializable;
+
+public class MString implements Serializable {
 
     public String name;
-
-    @Override
-    public byte[] serialization() {
-        return name.getBytes();
-    }
-
-    @Override
-    public void deSerializer(byte[] data) {
-        name = new String(data);
-    }
 
     @Override
     public String toString() {

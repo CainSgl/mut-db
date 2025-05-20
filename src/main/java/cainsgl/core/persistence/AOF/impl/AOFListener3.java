@@ -3,13 +3,19 @@ package cainsgl.core.persistence.AOF.impl;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.excepiton.MutPersistenceException;
 import cainsgl.core.persistence.AOF.WriteFactor;
+import cainsgl.core.persistence.AOF.valueObj.AOFReadVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -72,6 +78,39 @@ public class AOFListener3 {
         }, 0, intervalTime, TimeUnit.MILLISECONDS);
     }
 
+    // 读取AOF文件
+    public List<AOFReadVO> readAOF(){
+        List<AOFReadVO> readVOs = new ArrayList<>();
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(fileName))){
+            while (dis.available() > 0) {
+                // 先读取该命令的时间戳
+                long commandTime = dis.readLong();
+                // 在读取命令的长度以及命令本身
+                int commandLength = dis.readInt();
+                byte[] commandBytes = new byte[commandLength];
+                dis.readFully(commandBytes);
+
+                // 读取参数个数
+                int argsCount = dis.readInt();
+                byte[][] args = new byte[argsCount][];
+                // 依次读取参数
+                for (int i = 0; i < argsCount; i++) {
+                    args[i] = new byte[dis.readInt()];
+                    dis.readFully(args[i]);
+                }
+
+                // 构建值对象
+                AOFReadVO readVO = new AOFReadVO(commandTime, commandBytes, args);
+                readVOs.add(readVO);
+            }
+        }catch (IOException e){
+            log.error("ERR While Read AOF", e);
+        }
+        // 从小到大排序
+        Collections.sort(readVOs);
+        return readVOs;
+    }
+
 
     public void addCommand(byte[][] args, int writeFactor, long currentTime) {
         // 获取到当前用于写入的缓冲区；标识为 writeFactor
@@ -86,10 +125,13 @@ public class AOFListener3 {
             log.info("缓冲区即将写满，触发AOF. 执行线程号: {}", threadId);
             this.flushAsync();
         }
-        // 向缓冲区写入数据
+        // 向缓冲区写入数据；先写入时间戳
         curBuffer.putLong(currentTime);
+        // 再写入命令的长度以及命令本身
         curBuffer.putInt(commandName.length);
         curBuffer.put(commandName);
+        // 再写入参数的个数
+        curBuffer.putInt(args.length);
         // 依次写入参数
         for (byte[] arg : args) {
             curBuffer.putInt(arg.length);

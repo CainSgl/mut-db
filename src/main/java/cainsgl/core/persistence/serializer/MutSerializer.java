@@ -30,8 +30,7 @@ public class MutSerializer {
 
         // 2. 中间人不具备序列化任何类型的能力；调用默认序列化器将转化后的默认类型序列化为byte数组
         byte[] mapInfo = DefaultSerializer.defaultSerialize(defaultMap)
-                .keyClassName(converterVO.getKeyType())
-                .valueClassName(converterVO.getValueType())
+                .setClassName(converterVO.getKeyType(), converterVO.getValueType())
                 .doDefaultSerialize();
 
         // 3. 返回byte数组

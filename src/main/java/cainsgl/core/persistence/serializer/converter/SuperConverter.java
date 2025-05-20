@@ -20,10 +20,13 @@ public class SuperConverter {
         String valueClassName = "";
 
         Map<byte[], byte[]> defaultMap = new HashMap<byte[], byte[]>();
+
+        ByteConverter converter = null;
+
         for (Map.Entry<K, V> entry : map.entrySet()) {
             // 挨个将entry序列化为字节数组存入Map<byte[], byte[]>
-            byte[] keyBytes = converterToBytes(entry.getKey());
-            byte[] valueBytes = converterToBytes(entry.getValue());
+            byte[] keyBytes = converterToBytes(entry.getKey(), converter);
+            byte[] valueBytes = converterToBytes(entry.getValue(), converter);
             defaultMap.put(keyBytes, valueBytes);
             if(keyClassName.isEmpty()){
                 keyClassName = entry.getKey().getClass().getName();
@@ -35,12 +38,14 @@ public class SuperConverter {
         return new ConverterVO(defaultMap, keyClassName, valueClassName);
     }
 
-    private static <T> byte[] converterToBytes(T obj){
+    private static <T> byte[] converterToBytes(T obj, ByteConverter<T> converter) {
         if(null == obj){
             return new byte[0];
         }
         Class<T> clazz = (Class<T>) obj.getClass();
-        ByteConverter<T> converter = ByteConverterRegistry.getConverter(clazz);
+        if(converter == null){
+            converter = ByteConverterRegistry.getConverter(clazz);
+        }
         return converter.convertToBytes(obj);
     }
 
