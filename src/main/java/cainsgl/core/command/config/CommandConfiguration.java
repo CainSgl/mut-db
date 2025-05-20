@@ -1,5 +1,6 @@
 package cainsgl.core.command.config;
 
+import cainsgl.core.command.base.manager.ExecuteManager;
 import cainsgl.core.command.base.manager.SetGetManager;
 import cainsgl.core.command.base.manager.SimpleCommandManager;
 import cainsgl.core.command.manager.CommandManager;
@@ -29,6 +30,7 @@ public class CommandConfiguration
     {
         new SetGetManager();
         new SimpleCommandManager();
+        new ExecuteManager();
         //释放序列化数据
         DESERIALIZER_MAP = null;
     }

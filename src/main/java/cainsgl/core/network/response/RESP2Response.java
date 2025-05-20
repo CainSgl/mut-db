@@ -10,4 +10,5 @@ public interface RESP2Response
     SimpleStringResponse OK = new SimpleStringResponse("OK");
     NumberResponse NONE=NumberResponse.nullResponse();
     byte[] getBytes();
+
 }

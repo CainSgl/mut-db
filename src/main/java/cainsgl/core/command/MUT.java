@@ -5,7 +5,14 @@ import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
 
+import javax.naming.Context;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class MUT
@@ -60,10 +67,12 @@ public class MUT
 
         return execute(commandBytes, argsBytes, consumer);
     }
-    public static boolean execute(String cmd,Consumer<RESP2Response> consumer)
+
+    public static boolean execute(String cmd, Consumer<RESP2Response> consumer)
     {
-        return execute(consumer,cmd.split(" "));
+        return execute(consumer, cmd.split(" "));
     }
+
 
 
 
