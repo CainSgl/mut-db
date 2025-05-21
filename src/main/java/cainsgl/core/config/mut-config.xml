@@ -19,9 +19,10 @@
 
     <!-- RDB 配置 -->
     <rdb>
-        <intervalTime>10000</intervalTime>
+        <intervalTime>5000</intervalTime>
         <insertCount>2</insertCount>
         <businessType>HIGH</businessType>
+        <maxDelayCount>5</maxDelayCount>
         <fileName>D:\Code\mut-db\src\main\java\cainsgl\core\persistence\test\dump.txt</fileName>
     </rdb>
 

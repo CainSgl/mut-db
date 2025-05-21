@@ -32,6 +32,7 @@ public class GcSystem
             }
             MAIN_THEAD = ThreadManager.getEventLoop();
             updateTime = System.currentTimeMillis();
+            System.out.println("GC类加载器" + MutConfiguration.GC.class.getClassLoader());
             MAIN_THEAD.scheduleAtFixedRate(GcSystem::mainExecute, 0, MutConfiguration.GC.UNIT_UPDATE_TIME, TimeUnit.MILLISECONDS);
             for (Chronology chronology : chronologies)
             {

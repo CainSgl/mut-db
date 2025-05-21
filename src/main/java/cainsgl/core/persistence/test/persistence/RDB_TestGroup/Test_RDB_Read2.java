@@ -12,19 +12,21 @@ import java.util.Map;
 
 public class Test_RDB_Read2 {
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        try {
-            // 加载配置
-            ConfigLoader.loadConfig("D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\config\\mut-config.xml");
+//        try {
+//            // 加载配置
+//            ConfigLoader.loadConfig("D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\config\\mut-config.xml");
+//
+//            // 打印配置验证
+//            System.out.println("Port: " + MutConfiguration.PORT);
+//            System.out.println("RDB File: " + MutConfiguration.RDB.FILE_NAME);
+//            // 其他初始化...
+//
+//            new CommandConfiguration();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-            // 打印配置验证
-            System.out.println("Port: " + MutConfiguration.PORT);
-            System.out.println("RDB File: " + MutConfiguration.RDB.FILE_NAME);
-            // 其他初始化...
-
-            new CommandConfiguration();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        RDBPersistence.storage();
 
 //        Map<String, byte[]> stringMap = RDBPersistence.readOnBytes();
 //

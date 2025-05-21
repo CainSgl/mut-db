@@ -33,6 +33,7 @@ public class CommandConfiguration {
                 // 实例化manager
                 Class<?> clazz = Class.forName(className);
                 clazz.getDeclaredConstructor().newInstance();
+                System.out.println(clazz);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize managers", e);

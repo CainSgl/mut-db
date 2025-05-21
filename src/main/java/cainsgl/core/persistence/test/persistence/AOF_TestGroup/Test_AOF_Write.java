@@ -1,5 +1,6 @@
 package cainsgl.core.persistence.test.persistence.AOF_TestGroup;
 
+import cainsgl.core.config.ConfigLoader;
 import cainsgl.core.persistence.test.command.SetProcessor;
 import cainsgl.core.persistence.test.mainMemory.Data;
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
@@ -9,6 +10,14 @@ import java.util.List;
 
 public class Test_AOF_Write {
     public static void main(String[] args) {
+        // 加载配置文件
+        try {
+            ConfigLoader.loadConfig("D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\config\\mut-config.xml");
+        } catch (Exception e) {
+
+        }
+
+
         SetProcessor setProcessor = new SetProcessor();
         setProcessor.execute("key", "value1".getBytes(), 3000L);
         setProcessor.execute("key1", "value2".getBytes(), 5000L);

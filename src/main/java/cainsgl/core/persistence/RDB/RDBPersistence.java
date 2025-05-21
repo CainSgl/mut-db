@@ -32,6 +32,7 @@ public class RDBPersistence {
         log.debug("Starting task!");
         // 模拟从主内存中拿取数据
         Map<String, byte[]> dataGroup = TestCommandConfiguration.getData();
+        Map<String, byte[]> map = CommandConfiguration.getData();
         dataGroup.forEach((managerClassName, value) -> {
             byte[] res = new byte[4 + managerClassName.getBytes().length + value.length + 4];
             int offset = 0;
