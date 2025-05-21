@@ -20,10 +20,26 @@ public class MutServer implements Stopable
 
     }
 
-    private void init(ClassLoader classLoader) throws Exception
+    private void init(long startTime) throws Exception
     {
         new CommandConfiguration();
 
+        System.out.println("____                                                                                      ");
+        System.out.println("        ,'  , `.                 ___      .--.--.                                                  ");
+        System.out.println("     ,-+-,.' _ |               ,--.'|_   /  /    '.                                                ");
+        System.out.println("  ,-+-. ;   , ||         ,--,  |  | :,' |  :  /`. /             __  ,-.                    __  ,-. ");
+        System.out.println(" ,--.'|'   |  ;|       ,'_ /|  :  : ' : ;  |  |--`            ,' ,'/ /|    .---.         ,' ,'/ /| ");
+        System.out.println("|   |  ,', |  ':  .--. |  | :.;__,'  /  |  :  ;_       ,---.  '  | |' |  /.  ./|  ,---.  '  | |' | ");
+        System.out.println("|   | /  | |  ||,'_ /| :  . ||  |   |    \\  \\    `.   /     \\ |  |   ,'.-' . ' | /     \\ |  |   ,' ");
+        System.out.println("'   | :  | :  |,|  ' | |  . .:__,'| :     `----.   \\/    /  |'  :  / /___/ \\: |/    /  |'  :  /   ");
+        System.out.println(";   . |  ; |--' |  | ' |  | |  '  : |__   __ \\  \\  |.    ' / ||  | '  .   \\  ' .    ' / ||  | '    ");
+        System.out.println("|   : |  | ,    :  | : ;  ; |  |  | '.'| /  /`--'  /'   ;   /|;  : |   \\   \\   '   ;   /|;  : |    ");
+        System.out.println("|   : '  |/     '  :  `--'   \\ ;  :    ;'--'.     / '   |  / ||  , ;    \\   \\  '   |  / ||  , ;    ");
+        System.out.println(";   | |`-'      :  ,      .-./ |  ,   /   `--'---'  |   :    | ---'      \\   \\ |   :    | ---'     ");
+        System.out.println("|   ;/           `--`----'      ---`-'               \\   \\  /             '---\" \\   \\  /           ");
+        System.out.println("'---'                                                 `----'                     `----'            ");
+        System.out.println("MutServer started in port:"+MutConfiguration.PORT);
+        System.out.println("Server start cost time:" +(System.currentTimeMillis()-startTime)/1000 +"s");
     }
 
     private void start() throws Exception
@@ -46,7 +62,7 @@ public class MutServer implements Stopable
          //   System.out.println("当前MutConfig类加载器: " + MutConfiguration.class.getClassLoader());
             channelFuture= bootstrap.bind(MutConfiguration.PORT).sync();
           //  MutConfiguration.log.info("MutServer started in port "+MutConfiguration.PORT+" startTime:"+   GcSystem.SERVER_START_TIME);
-            init(classLoader);
+            init(startTime);
             channelFuture.channel().closeFuture().sync();
         }catch (Exception e)
         {
