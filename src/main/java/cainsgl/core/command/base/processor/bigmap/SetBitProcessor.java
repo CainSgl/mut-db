@@ -1,20 +1,14 @@
 package cainsgl.core.command.base.processor.bigmap;
 
 import cainsgl.core.command.base.manager.BigMapManager;
-import cainsgl.core.command.base.manager.HashManager;
 import cainsgl.core.command.processor.CommandProcessor;
-import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.data.key.ByteSuperKey;
-import cainsgl.core.data.ttl.TTLObj;
-import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.RESP2Response;
-import cainsgl.core.network.response.RespUtils;
+import cainsgl.core.utils.RespUtils;
 import cainsgl.core.network.response.impl.ErrorResponse;
 import cainsgl.core.structure.AutoResizeBigMap;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SetBitProcessor extends CommandProcessor<BigMapManager>
 {

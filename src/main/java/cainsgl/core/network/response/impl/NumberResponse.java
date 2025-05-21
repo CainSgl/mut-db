@@ -1,9 +1,7 @@
 package cainsgl.core.network.response.impl;
 
 import cainsgl.core.network.response.ElementResponse;
-import cainsgl.core.network.response.RespUtils;
-
-import java.util.Arrays;
+import cainsgl.core.utils.RespUtils;
 
 public class NumberResponse implements ElementResponse
 {

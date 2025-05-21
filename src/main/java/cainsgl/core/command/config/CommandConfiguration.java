@@ -16,6 +16,7 @@ import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 import io.netty.util.concurrent.Promise;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,17 +27,33 @@ public class CommandConfiguration {
 
     public CommandConfiguration()
     {
-        // 从 XML 加载 Manager 类
-        try {
-            List<String> managerClasses = ConfigLoader.loadManagers("D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\config\\mut-config.xml");
-            for (String className : managerClasses) {
-                // 实例化manager
-                Class<?> clazz = Class.forName(className);
-                clazz.getDeclaredConstructor().newInstance();
-                System.out.println(clazz);
+//        try {
+//            List<String> managerClasses = ConfigLoader.loadManagers("D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\config\\mut-config.xml");
+//            for (String className : managerClasses) {
+//                // 实例化manager
+//                Class<?> clazz = Class.forName(className);
+//                clazz.getDeclaredConstructor().newInstance();
+//                System.out.println(clazz);
+//            }
+//        } catch (Exception e) {
+//            throw new RuntimeException("Failed to initialize managers", e);
+//        }
+
+        List<String> managers = MutConfiguration.MANAGERS;
+        try{
+            for(String manager : managers)
+            {
+                if(manager.isEmpty())
+                {
+                    continue;
+                }
+                Class<?> managerClass = Class.forName(manager);
+                Constructor<?> constructor = managerClass.getConstructor();
+                constructor.setAccessible(true);
+                constructor.newInstance();
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize managers", e);
+        }catch (Exception e) {
+            MutConfiguration.log.error("failed to load manager", e);
         }
         DESERIALIZER_MAP = null;
     }

@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class ConfigLoader {
     public static void loadConfig(String configPath) throws Exception {
         Document doc = parseXml(configPath);

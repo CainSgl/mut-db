@@ -1,4 +1,4 @@
-package cainsgl.core.network.response;
+package cainsgl.core.utils;
 
 public class RespUtils
 {

@@ -23,10 +23,12 @@ public class MutServer implements Stopable
     private void init(ClassLoader classLoader) throws Exception
     {
         new CommandConfiguration();
+
     }
 
     private void start() throws Exception
     {
+        long startTime=System.currentTimeMillis();
         ClassLoader classLoader = this.getClass().getClassLoader();
         Class<? extends ClassLoader> classLoaderClass = classLoader.getClass();
         if(!classLoaderClass.getName().equals("cainsgl.core.system.loader.MutClassLoader"))
@@ -41,9 +43,9 @@ public class MutServer implements Stopable
                     .childHandler(new MutServerInitializer())
                     .option(ChannelOption.SO_BACKLOG, MutConfiguration.BACKLOG)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            System.out.println("当前MutConfig类加载器: " + MutConfiguration.class.getClassLoader());
+         //   System.out.println("当前MutConfig类加载器: " + MutConfiguration.class.getClassLoader());
             channelFuture= bootstrap.bind(MutConfiguration.PORT).sync();
-            MutConfiguration.log.info("MutServer started in port "+MutConfiguration.PORT+" startTime:"+   GcSystem.SERVER_START_TIME);
+          //  MutConfiguration.log.info("MutServer started in port "+MutConfiguration.PORT+" startTime:"+   GcSystem.SERVER_START_TIME);
             init(classLoader);
             channelFuture.channel().closeFuture().sync();
         }catch (Exception e)
