@@ -58,6 +58,7 @@ public class RDBListener {
     private static void init(){
         scheduleExecutor.scheduleAtFixedRate(() -> {
             long count = counter.longValue();
+            log.info("RDBListener executed in {} times", count);
             // 达到RDB阈值；尝试开启子进程
             if(count >= insertCount){
                 log.debug("RDBListener: insert count: {} - RDB Start!", count);

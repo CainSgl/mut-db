@@ -253,7 +253,7 @@ public class CommandShunt implements MutSerializable
 
     public CommandShunt(ShuntCommandManager shuntCommandManager, CommandProcessor... proxy)
     {
-        WORK_GROUP = ThreadManager.getEventLoopGroup(MutConfiguration.shuntThreads);
+        WORK_GROUP = ThreadManager.getEventLoopGroup(MutConfiguration.SHUNT_THREADS);
         volumeThread = ThreadManager.getEventLoop();
         processors = new List[proxy.length];
         EventLoop eventLoop = ThreadManager.getEventLoop();

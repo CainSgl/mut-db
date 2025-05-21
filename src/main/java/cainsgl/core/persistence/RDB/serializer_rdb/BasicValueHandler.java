@@ -1,4 +1,4 @@
-package cainsgl.废案.serializer_abandon;
+package cainsgl.core.persistence.RDB.serializer_rdb;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,7 +7,6 @@ import java.io.IOException;
 /*
 * 提供序列化与反序列化的容器化管理
 * */
-@Deprecated
 public class BasicValueHandler {
 
     private final Serializer serializer;

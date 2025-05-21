@@ -4,6 +4,7 @@ import cainsgl.core.command.base.manager.*;
 import cainsgl.core.command.manager.CommandManager;
 import cainsgl.core.command.manager.shunt.CommandShunt;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
+import cainsgl.core.config.ConfigLoader;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.response.ElementResponse;
 import cainsgl.core.network.response.impl.BulkStringResponse;
@@ -21,18 +22,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class CommandConfiguration
-{
+public class CommandConfiguration {
+
     public CommandConfiguration()
     {
-        new StringManager();
-        new SimpleCommandManager();
-        new ExecuteManager();
-        new HashManager();
-        new ListManager();
-        new BigMapManager();
-        //释放序列化数据
+        // 从 XML 加载 Manager 类
+        try {
+            List<String> managerClasses = ConfigLoader.loadManagers("D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\config\\mut-config.xml");
+            for (String className : managerClasses) {
+                // 实例化manager
+                Class<?> clazz = Class.forName(className);
+                clazz.getDeclaredConstructor().newInstance();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize managers", e);
+        }
         DESERIALIZER_MAP = null;
+    }
+
+    public static Map<String, MutSerializable> test(){
+        return COMMAND_MANAGERS;
     }
 
     private static final Map<String, MutSerializable> COMMAND_MANAGERS = new HashMap<>();

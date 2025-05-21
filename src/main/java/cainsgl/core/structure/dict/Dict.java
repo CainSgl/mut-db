@@ -16,7 +16,7 @@ public class Dict<K, V> extends AbstractDict<K, V>
 
     public Dict()
     {
-        this(MutConfiguration.initial_capacity);
+        this(MutConfiguration.INITIAL_CAPACITY);
     }
 
     private void rehashEnd()
@@ -44,11 +44,11 @@ public class Dict<K, V> extends AbstractDict<K, V>
 //            AssistTable = new NoCacheDictHt<>(MainTable.table.length / 2);
 //        }
         float loadFactor = MainTable.size / (float) MainTable.table.length;
-        if (loadFactor > MutConfiguration.MAX_Load_Factor)
+        if (loadFactor > MutConfiguration.MAX_LOAD_FACTOR)
         {
             rehash = 0;
             AssistTable = new NoCacheDictHt<>(MainTable.table.length * 2);
-        } else if (loadFactor < MutConfiguration.MIN_Load_Factor)
+        } else if (loadFactor < MutConfiguration.MIN_LOAD_FACTOR)
         {
             if (MainTable.table.length == 2)
             {

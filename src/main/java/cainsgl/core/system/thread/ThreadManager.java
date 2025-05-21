@@ -35,13 +35,13 @@ public class ThreadManager
         {
             gcThreads2 = 1;
         }
-        if (MutConfiguration.gcThreads != null)
+        if (MutConfiguration.GC_THREADS != null)
         {
-            gcThreads2 = MutConfiguration.gcThreads;
+            gcThreads2 = MutConfiguration.GC_THREADS;
         }
-        if (MutConfiguration.workThreads != null)
+        if (MutConfiguration.WORK_THREADS != null)
         {
-            workThreads = MutConfiguration.workThreads;
+            workThreads = MutConfiguration.WORK_THREADS;
         }
         SERVER_BOSS_GROUP = new NioEventLoopGroup(1, new DefaultThreadFactory("BossGroup", Thread.NORM_PRIORITY));
         SERVER_WORKER_GROUP = new NioEventLoopGroup(workThreads, new DefaultThreadFactory("HandlerGroup", Thread.NORM_PRIORITY));
@@ -51,7 +51,7 @@ public class ThreadManager
           GC_WORKER_GROUP[i]=new DefaultEventLoop(new DefaultThreadFactory("gcWorker"+i, Thread.NORM_PRIORITY));
         }
         gcThreads = gcThreads2;
-        if (MutConfiguration.autoScalingThread)
+        if (MutConfiguration.AUTO_SCALING_THREAD)
         {
             fakeThreads = cpuCores - workThreads - gcThreads2 - 1;
         } else

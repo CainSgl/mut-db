@@ -25,8 +25,13 @@ public class MutClassLoader extends URLClassLoader
     }
 
     @Override
-    protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException
-    {
+    protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
+
+        // NOTE (简单方案，存在问题) 排除该类加载器对MutConfig的加载，委托给父加载器加载
+        if (className.equals("cainsgl.core.config.MutConfiguration")) {
+            return super.loadClass(className, resolve); // 使用父加载器
+        }
+
         synchronized (getClassLoadingLock(className))
         {
             Class<?> loadedClass = findLoadedClass(className);

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mut-config>
+    <!-- 基础配置 -->
+    <base>
+        <port>6379</port>
+        <backlog>128</backlog>
+        <workThreads>2</workThreads>
+        <gcThreads>2</gcThreads>
+        <sentinelActivate>true</sentinelActivate>
+        <autoScalingThread>true</autoScalingThread>
+        <initialCapacity>2</initialCapacity>
+        <maxLoadFactor>2.0</maxLoadFactor>
+        <minLoadFactor>0.5</minLoadFactor>
+        <shuntThreads>2</shuntThreads>
+        <maxOverLoad>3</maxOverLoad>
+        <minOverLoad>1</minOverLoad>
+        <rehashNum>6</rehashNum>
+    </base>
+
+    <!-- RDB 配置 -->
+    <rdb>
+        <intervalTime>10000</intervalTime>
+        <insertCount>2</insertCount>
+        <businessType>HIGH</businessType>
+        <fileName>D:\Code\mut-db\src\main\java\cainsgl\core\persistence\test\dump.txt</fileName>
+    </rdb>
+
+    <!-- AOF 配置 -->
+    <aof>
+        <bufferSize>4194304</bufferSize>
+        <bufferCount>2</bufferCount>
+        <intervalTime>5000</intervalTime>
+        <fileName>D:\Code\mut-db\src\main\java\cainsgl\core\persistence\test\aof.txt</fileName>
+    </aof>
+
+    <!-- GC 配置 -->
+    <gc>
+        <defaultSlots>1024</defaultSlots>
+        <tickDuration>10</tickDuration>
+        <unitUpdateTime>5</unitUpdateTime>
+    </gc>
+
+    <!-- Manager 类配置 -->
+    <managers>
+        <manager>cainsgl.core.command.base.manager.StringManager</manager>
+        <manager>cainsgl.core.command.base.manager.SimpleCommandManager</manager>
+        <manager>cainsgl.core.command.base.manager.ExecuteManager</manager>
+        <manager>cainsgl.core.command.base.manager.HashManager</manager>
+        <manager>cainsgl.core.command.base.manager.ListManager</manager>
+        <manager>cainsgl.core.command.base.manager.BigMapManager</manager>
+    </managers>
+</mut-config>

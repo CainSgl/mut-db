@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class MutServer implements Stopable
 {
+
     ChannelFuture channelFuture;
     private MutServer()
     {
@@ -23,6 +24,7 @@ public class MutServer implements Stopable
     {
         new CommandConfiguration();
     }
+
     private void start() throws Exception
     {
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -37,10 +39,11 @@ public class MutServer implements Stopable
             bootstrap.group(ThreadManager.SERVER_BOSS_GROUP,ThreadManager.SERVER_WORKER_GROUP)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new MutServerInitializer())
-                    .option(ChannelOption.SO_BACKLOG, MutConfiguration.backlog)
+                    .option(ChannelOption.SO_BACKLOG, MutConfiguration.BACKLOG)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            channelFuture= bootstrap.bind(MutConfiguration.port).sync();
-            MutConfiguration.log.info("MutServer started in port "+MutConfiguration.port+" startTime:"+   GcSystem.SERVER_START_TIME);
+            System.out.println("当前MutConfig类加载器: " + MutConfiguration.class.getClassLoader());
+            channelFuture= bootstrap.bind(MutConfiguration.PORT).sync();
+            MutConfiguration.log.info("MutServer started in port "+MutConfiguration.PORT+" startTime:"+   GcSystem.SERVER_START_TIME);
             init(classLoader);
             channelFuture.channel().closeFuture().sync();
         }catch (Exception e)

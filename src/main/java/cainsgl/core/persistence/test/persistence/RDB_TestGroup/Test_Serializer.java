@@ -1,7 +1,7 @@
 package cainsgl.core.persistence.test.persistence.RDB_TestGroup;
 
-import cainsgl.废案.serializer_abandon.impl.RedisObjSerializer;
-import cainsgl.废案.serializer_abandon.valueObj.DeserializeVO;
+import cainsgl.core.persistence.RDB.serializer_rdb.impl.RedisObjSerializer;
+import cainsgl.core.persistence.RDB.serializer_rdb.valueObj.DeserializeVO;
 import cainsgl.core.persistence.test.mainMemory.RedisObj;
 
 import java.io.IOException;
