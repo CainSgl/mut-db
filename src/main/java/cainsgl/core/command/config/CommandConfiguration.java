@@ -15,6 +15,8 @@ import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
 import io.netty.util.concurrent.Promise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class CommandConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(CommandConfiguration.class);
 
     public CommandConfiguration()
     {
@@ -189,5 +193,7 @@ public class CommandConfiguration {
         }
         return data;
     }
+
+
 
 }
