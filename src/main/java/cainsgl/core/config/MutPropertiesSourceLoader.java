@@ -16,8 +16,18 @@ public class MutPropertiesSourceLoader
 
     public static final Logger log= LoggerFactory.getLogger(MutPropertiesSourceLoader.class);
 
-    private static  MutPropertiesSourceLoader instance = new MutPropertiesSourceLoader();
+    private static  MutPropertiesSourceLoader instance;
     private static int count=5;
+    static {
+        try
+        {
+            instance = new MutPropertiesSourceLoader();
+            instance.loadConfigByEnvrioment();
+        } catch (Exception e)
+        {
+            LoggerFactory.getLogger(MutServer.class).error("加载配置时出现异常", e);
+        }
+    }
     public static MutPropertiesSourceLoader getInstance()
     {
 
@@ -36,16 +46,24 @@ public class MutPropertiesSourceLoader
 
     public void loadConfigByEnvrioment() throws IOException
     {
-        URL resource = MutConfiguration.class
-                .getClassLoader()
-                .getResource("mut.properties");
-        if (resource == null)
+        URL resource;
+        String property = System.getProperty("config.path");
+        if(property==null||property.isEmpty())
         {
-            log.error("未读取到配置文件");
-            throw new IllegalArgumentException("未读取到配置文件");
+            resource = MutConfiguration.class
+                    .getClassLoader()
+                    .getResource("mut.properties");
+            if (resource == null)
+            {
+                log.error("未读取到配置文件");
+                throw new IllegalArgumentException("未读取到配置文件");
+            }
+            String file = resource.getFile();
+            loadConfig(file);
+        }else
+        {
+            loadConfig(property);
         }
-        String file = resource.getFile();
-        loadConfig(file);
     }
 
     public void loadConfig(String filePath) throws IOException

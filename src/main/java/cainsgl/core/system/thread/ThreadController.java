@@ -15,4 +15,5 @@ public interface ThreadController
 
     void backLoopGroup(EventLoopGroup eventLoopGroup);
 
+    boolean hasMoreThreads();
 }

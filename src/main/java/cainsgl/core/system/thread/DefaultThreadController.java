@@ -79,7 +79,7 @@ public class DefaultThreadController implements ThreadController
     {
         ThreadControllerEventLoop eventLoop1 = (ThreadControllerEventLoop) eventLoop;
         MutConfiguration.log.info("归还线程id为{}的线程", eventLoop1);
-        if (eventLoop1.used.decrementAndGet() == 0)
+        if (eventLoop1.used.decrementAndGet()<0)
         {
             //销毁
             MutConfiguration.log.info("销毁id为{}的线程", eventLoop1);
@@ -109,13 +109,19 @@ public class DefaultThreadController implements ThreadController
     public synchronized void backLoopGroup(EventLoopGroup eventLoopGroup)
     {
         ThreadControllerEventLoopGroup group = (ThreadControllerEventLoopGroup) eventLoopGroup;
-        if (group.used.decrementAndGet() == 0)
+        if (group.used.decrementAndGet()<0)
         {
             //销毁
             THREAD_GROUPS.remove(group);
             fakeThreadsNum += group.num;
             group.shutdownGracefully();
         }
+    }
+
+    @Override
+    public boolean hasMoreThreads()
+    {
+        return fakeThreadsNum>0;
     }
 
 

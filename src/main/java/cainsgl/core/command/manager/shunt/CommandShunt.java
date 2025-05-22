@@ -43,7 +43,7 @@ public class CommandShunt implements MutSerializable
             }
         } catch (Exception e)
         {
-            MutConfiguration.log.error("获取序列化数据的时候获取失败，出现异常", e);
+    //        MutConfiguration.log.error("获取序列化数据的时候获取失败，出现异常", e);
         }
         //组合，并且由于我有多个serialization,后面反序列化也要扩张
         //记录下长度
@@ -97,7 +97,7 @@ public class CommandShunt implements MutSerializable
                 while (count >= processors[0].size())//再次检验
                 {
                     //防止虚假唤醒
-                    MutConfiguration.log.info("CommandShunt里在没有添加的数据情况下被唤醒");
+                //    MutConfiguration.log.info("CommandShunt里在没有添加的数据情况下被唤醒");
                     serializerThread.compareAndSet(null, Thread.currentThread());
                     LockSupport.park();
                 }
@@ -128,7 +128,7 @@ public class CommandShunt implements MutSerializable
                 try{
                     aofBuffer1 = new AofBuffer(proxy.commandName()+index);
                 }catch (Exception e2) {
-                    MutConfiguration.log.error("Could not create aofBuffer for command {}" , proxy.commandName(), e2);
+              //      MutConfiguration.log.error("Could not create aofBuffer for command {}" , proxy.commandName(), e2);
                 }
             }
             aofBuffer = aofBuffer1;
@@ -288,7 +288,7 @@ public class CommandShunt implements MutSerializable
         {
             processors[i] = new ArrayList<>();
             processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop,processors[0].size()));
-            MutConfiguration.log.info("create the proxy for shunt,command: {}", proxy[i].commandName());
+         //   MutConfiguration.log.info("create the proxy for shunt,command: {}", proxy[i].commandName());
         }
 
     }
@@ -296,18 +296,34 @@ public class CommandShunt implements MutSerializable
     public void shunt(ShuntCaller caller, byte[][] args, Consumer<RESP2Response> consumer)
     {
         WORK_GROUP.submit(() -> {
-            int record = caller.getRecord();
-            List<CommandShuntComponent> commandShuntComponents = processors[record];
-            autoVolume(commandShuntComponents);
-            CommandShuntComponent executor = commandShuntComponents.get(new ByteFastKey(args[0]).hashCode() % commandShuntComponents.size());
-            executor.shuntExecute(args, consumer);
+            try
+            {
+                int record = caller.getRecord();
+                List<CommandShuntComponent> commandShuntComponents = processors[record];
+                if(!isVolume)
+                {
+                    autoVolume(commandShuntComponents);
+                }
+                int i =Math.abs(new ByteFastKey(args[0]).hashCode()) ;
+                CommandShuntComponent executor = commandShuntComponents.get(i% commandShuntComponents.size());
+                executor.shuntExecute(args, consumer);
+
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
         });
     }
 
-    boolean isVolume = false;
+    volatile boolean isVolume = false;
 
     private void autoVolume(List<CommandShuntComponent> executors)
     {
+        if(!ThreadManager.hasFakeThread())
+        {
+            return;
+        }
         volumeThread.submit(() -> {
             if (isVolume)
             {
@@ -375,7 +391,7 @@ public class CommandShunt implements MutSerializable
                 return;
             } catch (Exception e)
             {
-                MutConfiguration.log.error("====>不期望的错误", e);
+              //  MutConfiguration.log.error("====>不期望的错误", e);
             } finally
             {
                 isVolume = false;
@@ -397,7 +413,7 @@ public class CommandShunt implements MutSerializable
                         // throw new UnsupportedOperationException("不支持没有key的CommandProcessor使用分流器");
                         while (true)
                         {
-                            MutConfiguration.log.error("不支持没有key的CommandProcessor使用分流器,command: {}", proxys[i].commandName());
+                        //    MutConfiguration.log.error("不支持没有key的CommandProcessor使用分流器,command: {}", proxys[i].commandName());
                         }
                     }
                     //检验一下，是否他们的名称相同
@@ -409,10 +425,10 @@ public class CommandShunt implements MutSerializable
                 }
             } catch (ArrayIndexOutOfBoundsException e)
             {
-                MutConfiguration.log.error("错误，在再次构建manager的时候，你的processor少于第一次构建的数量");
+             //   MutConfiguration.log.error("错误，在再次构建manager的时候，你的processor少于第一次构建的数量");
             } catch (Exception e)
             {
-                MutConfiguration.log.error("发生错误", e);
+         //       MutConfiguration.log.error("发生错误", e);
             }
             if (serializerThread != null)
             {

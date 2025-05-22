@@ -43,17 +43,17 @@ public class ThreadManager
         {
             workThreads = MutConfiguration.WORK_THREADS;
         }
-        SERVER_BOSS_GROUP = new NioEventLoopGroup(1, new DefaultThreadFactory("BossGroup", Thread.NORM_PRIORITY));
+        SERVER_BOSS_GROUP = new NioEventLoopGroup(workThreads/2, new DefaultThreadFactory("BossGroup", Thread.NORM_PRIORITY));
         SERVER_WORKER_GROUP = new NioEventLoopGroup(workThreads, new DefaultThreadFactory("HandlerGroup", Thread.NORM_PRIORITY));
         GC_WORKER_GROUP=new EventLoop[gcThreads2];
         for(int i=0;i<gcThreads2;i++)
         {
-          GC_WORKER_GROUP[i]=new DefaultEventLoop(new DefaultThreadFactory("gcWorker"+i, Thread.NORM_PRIORITY));
+            GC_WORKER_GROUP[i]=new DefaultEventLoop(new DefaultThreadFactory("gcWorker"+i, Thread.NORM_PRIORITY));
         }
         gcThreads = gcThreads2;
         if (MutConfiguration.AUTO_SCALING_THREAD)
         {
-            fakeThreads = cpuCores - workThreads - gcThreads2 - 1;
+            fakeThreads = cpuCores - workThreads - gcThreads2 - workThreads/2;
         } else
         {
             fakeThreads = -1;
@@ -63,7 +63,7 @@ public class ThreadManager
             threadController = new CompactThreadController(workThreads);
         } else
         {
-            threadController = new DefaultThreadController(fakeThreads);
+            threadController = new WeakThreadController(fakeThreads);
         }
 
     }
@@ -117,6 +117,6 @@ public class ThreadManager
 
     public static boolean hasFakeThread()
     {
-        return fakeThreads > 0;
+        return threadController.hasMoreThreads();
     }
 }

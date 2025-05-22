@@ -97,13 +97,6 @@ public class MutConfiguration
     {
         log = LoggerFactory.getLogger(MutServer.class);
         MutPropertiesSourceLoader sourceLoader = MutPropertiesSourceLoader.getInstance();
-        try
-        {
-            sourceLoader.loadConfigByEnvrioment();
-        } catch (Exception e)
-        {
-            LoggerFactory.getLogger(MutServer.class).error("加载配置时出现异常", e);
-        }
         PORT = sourceLoader.getBaseInfoByDefault("port", 6379);
 
         // 初始化基础配置（对应base.*键）

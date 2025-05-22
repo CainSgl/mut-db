@@ -39,5 +39,11 @@ public class CompactThreadController implements ThreadController
 
     }
 
+    @Override
+    public boolean hasMoreThreads()
+    {
+        return false;
+    }
+
 
 }
