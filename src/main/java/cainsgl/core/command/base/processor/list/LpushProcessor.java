@@ -4,6 +4,7 @@ import cainsgl.core.command.base.manager.HashManager;
 import cainsgl.core.command.base.manager.ListManager;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteSuperKey;
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.RESP2Response;
@@ -19,40 +20,23 @@ public class LpushProcessor extends CommandProcessor<ListManager>
 
     public LpushProcessor()
     {
-        super(2, Integer.MAX_VALUE, "lpush", List.of("key"));
+        super(2, Integer.MAX_VALUE, "lpush", List.of("key"),true);
     }
 
     @Override
     public RESP2Response execute(byte[][] args, ListManager manager)
     {
         ByteSuperKey key = new ByteSuperKey(args[0]);
-        TTLObj<LinkedList<ByteValue>> listTTLObj = manager.map.get(key);
-        if(listTTLObj == null)
-        {
-
-            //往头部加数据
-            TTLObj<LinkedList<ByteValue>> ttl=manager.createTTL(createListByLeft(args));
-            manager.map.put(key,ttl);
-            return  NumberResponse.valueOf(args.length-1);
-        }
-        LinkedList<ByteValue> wrapper = listTTLObj.getWrapper();
-        if(wrapper == null)
-        {
-            //过期数据
-            TTLObj<LinkedList<ByteValue>> ttl=manager.createTTL(createListByLeft(args));
-            manager.map.put(key,ttl);
-            return  NumberResponse.valueOf(args.length-1);
-        }
-        addDataByLeft(wrapper,args);
-        return  NumberResponse.valueOf(args.length-1);
-
-
+        LinkedList<TTL2Obj> obj = manager.map.computeIfAbsent(key, (key1) -> new LinkedList<>());
+        addDataByLeft(obj, args);
+        return NumberResponse.valueOf(args.length - 1);
     }
-    public LinkedList<ByteValue> addDataByLeft( LinkedList<ByteValue> ls ,byte[][] args)
+
+    public LinkedList<TTL2Obj> addDataByLeft(LinkedList<TTL2Obj> ls, byte[][] args)
     {
-        for (int i=1;i<args.length;i++)
+        for (int i = 1; i < args.length; i++)
         {
-            ls.addFirst(new ByteValue(args[i]));
+            ls.addFirst(new TTL2Obj(new ByteValue(args[i])));
         }
         return ls;
     }
@@ -60,7 +44,7 @@ public class LpushProcessor extends CommandProcessor<ListManager>
     public LinkedList<ByteValue> createListByLeft(byte[][] args)
     {
         LinkedList<ByteValue> ls = new LinkedList<>();
-        for (int i=1;i<args.length;i++)
+        for (int i = 1; i < args.length; i++)
         {
             ls.addFirst(new ByteValue(args[i]));
         }

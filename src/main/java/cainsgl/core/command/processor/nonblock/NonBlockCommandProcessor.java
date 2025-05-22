@@ -17,19 +17,18 @@ public abstract class NonBlockCommandProcessor<T extends CommandManager> extends
     {
         super(minCount, maxCount, commandName, parameters);
         this.eventLoop = eventLoop;
-
     }
 
     @Override
     public void submit(byte[][] args, Consumer<RESP2Response> consumer,T manager)
     {
+
         eventLoop.submit(() -> {
             try{
                 consumer.accept(this.execute(args,manager));
             }catch(Exception t){
                 manager.exceptionCaught(t);
             }
-
         });
     }
 }

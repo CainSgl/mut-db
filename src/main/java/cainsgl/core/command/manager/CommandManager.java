@@ -1,6 +1,8 @@
 package cainsgl.core.command.manager;
 
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
+import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.ElementResponse;
 
 
@@ -10,14 +12,15 @@ import java.util.function.Consumer;
 public interface CommandManager
 {
      void exceptionCaught(Exception e);
-     default <T>TTLObj<T> createTTL(long expireTime,T wrapper, Consumer<TTLObj<T>> delCall)
+     default TTL2Obj createTTL(long expireTime, ByteValue wrapper, Consumer<TTL2Obj> delCall)
      {
-          return new TTLObj<T>(expireTime,wrapper,this,delCall);
+          return new TTL2Obj(expireTime,wrapper,this,delCall);
      }
-     default <T>TTLObj<T> createTTL(T wrapper)
+     default TTL2Obj createTTL(ByteValue wrapper)
      {
-          return new TTLObj<T>(wrapper);
+          return new TTL2Obj(wrapper);
      }
+
      default List<ElementResponse> scanData()
      {
           return null;

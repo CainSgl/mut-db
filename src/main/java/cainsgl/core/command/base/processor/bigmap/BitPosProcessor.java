@@ -13,7 +13,7 @@ public class BitPosProcessor extends CommandProcessor<BigMapManager>
 {
     public BitPosProcessor()
     {
-        super(1, 1, "bigpos", List.of("key index"));
+        super(1, 1, "bigpos", List.of("key index"),true);
     }
 
     @Override

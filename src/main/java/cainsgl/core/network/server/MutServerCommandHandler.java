@@ -6,14 +6,19 @@ import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.network.config.NetWorkConfig;
 import cainsgl.core.network.response.RESP2Response;
 import cainsgl.core.network.response.impl.ErrorResponse;
+import cainsgl.core.storge.rdb.RdbProcessor;
+import cainsgl.core.system.GcSystem;
 import cainsgl.core.utils.adapter.CommandAdapter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.nio.charset.StandardCharsets;
+
 public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
 {
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
     {
@@ -53,6 +58,8 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
                 ctx.writeAndFlush(byteBuf);
             } else
             {
+                //执行真正的命令，去统计
+
                 MutConfiguration.log.info("executing command: {}", cmd.commandName());
                 cmd.submit(args, resp2Response -> {
                     try{
@@ -64,6 +71,10 @@ public class MutServerCommandHandler extends ChannelInboundHandlerAdapter
                         byte[] bytes = resp2Response.getBytes();
                         ByteBuf byteBuf = alloc.directBuffer(bytes.length).writeBytes(bytes);
                         ctx.writeAndFlush(byteBuf);
+                        if(cmd.getAof()&&!(resp2Response instanceof ErrorResponse))
+                        {
+                            RdbProcessor.add();
+                        }
                     }catch (Exception e)
                     {
                         MutConfiguration.log.error("序列化出错",e);

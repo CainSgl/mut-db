@@ -7,7 +7,9 @@ import cainsgl.core.network.response.RESP2Response;
 
 import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.system.thread.ThreadManager;
+import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.EventLoop;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 public  class ShareThreadManager extends CommandManagerProxy
 {
@@ -43,7 +45,6 @@ public  class ShareThreadManager extends CommandManagerProxy
         }
     }
 
-    public static final EventLoop SHARE_LOOP = ThreadManager.getEventLoop();
-
+    public static final EventLoop SHARE_LOOP = new DefaultEventLoop(new DefaultThreadFactory("share-loop"));
 
 }

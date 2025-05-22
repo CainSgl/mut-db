@@ -5,6 +5,7 @@ import cainsgl.core.command.base.manager.StringManager;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.data.key.ByteSuperKey;
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.RESP2Response;
@@ -17,7 +18,7 @@ public class HsetProcessor  extends CommandProcessor<HashManager>
 {
     public HsetProcessor()
     {
-        super(3, 3, "hset", List.of("key","field","value"));
+        super(3, 3, "hset", List.of("key","field","value"),true);
     }
 
     @Override
@@ -25,8 +26,8 @@ public class HsetProcessor  extends CommandProcessor<HashManager>
     {
         ByteSuperKey key = new ByteSuperKey(args[0]);
         ByteFastKey field = new ByteFastKey(args[1]);
-        Map<ByteFastKey, TTLObj<ByteValue>> map2 = manager.map.computeIfAbsent(key, k -> new HashMap<>());
-        map2.put(field, new TTLObj<>(new ByteValue(args[2])));
+        Map<ByteFastKey, TTL2Obj> map2 = manager.map.computeIfAbsent(key, k -> new HashMap<>());
+        map2.put(field, new TTL2Obj(new ByteValue(args[2])));
         return RESP2Response.OK;
     }
 }

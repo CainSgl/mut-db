@@ -32,6 +32,12 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
         }
 
         @Override
+        public boolean getAof()
+        {
+            return proxy.getAof();
+        }
+
+        @Override
         public RESP2Response execute(byte[][] args, M manager)
         {
             //   return null;
@@ -43,6 +49,12 @@ public abstract class ShuntCommandManager<D> implements CommandManager, ShuntMan
         public void submit(byte[][] args, Consumer<RESP2Response> consumer, M manager)
         {
             commandShunt.shunt(this, args, consumer);
+        }
+
+        @Override
+        public void aof(byte[][] args)
+        {
+            throw new UnsupportedOperationException("不支持分流器组件直接调用aof");
         }
 
         @Override

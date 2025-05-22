@@ -14,4 +14,5 @@ public interface ThreadController
     EventLoopGroup getEventLoopGroup(int threadsNum);
 
     void backLoopGroup(EventLoopGroup eventLoopGroup);
+
 }

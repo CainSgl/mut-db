@@ -3,6 +3,7 @@ package cainsgl.core.command.base.processor.list;
 import cainsgl.core.command.base.manager.ListManager;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteSuperKey;
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.ElementResponse;
@@ -28,43 +29,64 @@ public class LrangeProcessor extends CommandProcessor<ListManager>
     public RESP2Response execute(byte[][] args, ListManager manager)
     {
         ByteSuperKey key = new ByteSuperKey(args[0]);
-        TTLObj<LinkedList<ByteValue>> listTTLObj = manager.map.get(key);
-        if (listTTLObj == null)
+        LinkedList<TTL2Obj> list = manager.map.get(key);
+        if(list == null)
         {
             return RESP2Response.NIL;
         }
-        LinkedList<ByteValue> wrapper = listTTLObj.getWrapper();
-        if (wrapper == null || wrapper.isEmpty())
+        if(list.isEmpty())
         {
+            manager.map.remove(key);
             return RESP2Response.NIL;
         }
+
         if(args.length==1)
         {
-            return new ArrayResponse(getListByRange(0,-1,wrapper));
+            return new ArrayResponse(getListByRange(0,-1,list));
         }
 
-        return new ArrayResponse(getListByRange((int)RespUtils.readAsciiToLong(args[1],0),(int)RespUtils.readAsciiToLong(args[2],0),wrapper));
+        return new ArrayResponse(getListByRange((int)RespUtils.readAsciiToLong(args[1],0),(int)RespUtils.readAsciiToLong(args[2],0),list));
     }
 
-    private List<ElementResponse> getListByRange(int from, int to, LinkedList<ByteValue> wrapper)
+    private List<ElementResponse> getListByRange(int from, int to, LinkedList<TTL2Obj> wrapper)
     {
 
         if (to < from)
         {
             List<ElementResponse> list = new ArrayList<>(wrapper.size());
-            for (ByteValue v : wrapper)
+            for (TTL2Obj v : wrapper)
             {
-                list.add(new BulkStringResponse(v.getBytes()));
+                ByteValue wrapper1 = v.getWrapper();
+                if(wrapper1 != null)
+                {
+                    list.add(new BulkStringResponse(wrapper1.getBytes()));
+                }
             }
             return list;
         }
         List<ElementResponse> list = new ArrayList<>(to - from);
-        ListIterator<ByteValue> it = wrapper.listIterator ();
+        ListIterator<TTL2Obj> it = wrapper.listIterator ();
         for (int i = 0; i < from; i++) {
-            it.next ();
+            if(it.hasNext())
+            {
+                it.next ();
+            }else
+            {
+                return new LinkedList<>();
+            }
         }
         for (int i = from; i < to; i++) {
-            list.add(new BulkStringResponse(it.next().getBytes()));
+            if(it.hasNext())
+            {
+                ByteValue wrapper1 = it.next().getWrapper();
+                if(wrapper1 != null)
+                {
+                    list.add(new BulkStringResponse(wrapper1.getBytes()));
+                }
+            }else
+            {
+                return list;
+            }
         }
         return list;
     }

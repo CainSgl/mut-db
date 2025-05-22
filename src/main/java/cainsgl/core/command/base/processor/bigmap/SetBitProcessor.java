@@ -14,7 +14,7 @@ public class SetBitProcessor extends CommandProcessor<BigMapManager>
 {
     public SetBitProcessor()
     {
-        super(3, 3, "setbit", List.of("key index value"));
+        super(3, 3, "setbit", List.of("key index value"),true);
     }
 
     @Override

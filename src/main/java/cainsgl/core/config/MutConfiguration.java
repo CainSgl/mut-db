@@ -163,7 +163,7 @@ public class MutConfiguration
             // 初始化RDB配置（对应rdb.*键）
             MutPropertiesSourceLoader sourceLoader = MutPropertiesSourceLoader.getInstance();
             INTERVAL_TIME = sourceLoader.getRDBInfoByDefault("intervalTime", 2000);
-            INSERT_COUNT = sourceLoader.getRDBInfoByDefault("insertCount", 10);
+            INSERT_COUNT = sourceLoader.getRDBInfoByDefault("insertCount", 10)-1;
             BUSINESS_TYPE = sourceLoader.getRDBInfoByDefault("businessType", "HIGH");
             MAX_DELAY_COUNT = sourceLoader.getRDBInfoByDefault("maxDelayCount", 5);
             FILE_NAME = sourceLoader.getRDBInfoByDefault("fileName",
@@ -199,6 +199,17 @@ public class MutConfiguration
             INTERVAL_TIME = sourceLoader.getAOFInfoByDefault("intervalTime", 5000);
             FILE_NAME = sourceLoader.getAOFInfoByDefault("fileName",
                     "D:\\Code\\mut-db\\src\\main\\java\\cainsgl\\core\\persistence\\test\\aof.txt");
+            String aofInfoByDefault = sourceLoader.getAOFInfoByDefault("flushPolicy", "EVERY_SEC");
+            switch (aofInfoByDefault)
+            {
+                case "ALWAYS":
+                    flushPolicy = 2; break;
+                case "NO":
+                    flushPolicy = 1; break;
+                case "EVERY_SEC":
+                default:
+                    flushPolicy =3;
+            }
         }
 
         // 每一个独立缓冲区的内存大小
@@ -209,7 +220,7 @@ public class MutConfiguration
 
         // AOF执行的间隔时间
         public final static long INTERVAL_TIME;
-
+        public final static int flushPolicy;
         // AOF文件路径；暂时写死
         public final static String FILE_NAME;
 

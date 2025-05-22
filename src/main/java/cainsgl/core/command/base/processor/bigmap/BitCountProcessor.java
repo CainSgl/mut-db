@@ -13,7 +13,7 @@ public class BitCountProcessor extends CommandProcessor<BigMapManager>
 {
     public BitCountProcessor()
     {
-        super(1, 1, "bitcount", List.of("key index"));
+        super(1, 1, "bitcount", List.of("key index"),true);
     }
 
     @Override

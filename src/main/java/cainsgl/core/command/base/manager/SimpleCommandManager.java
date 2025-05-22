@@ -7,7 +7,7 @@ public class SimpleCommandManager extends ShareThreadManager
 {
     public SimpleCommandManager()
     {
-        super(new CommandProcessor2(), new PingProcessor(), new HelloWorldProcessor(), new ScanProcessor(), new GcProcessor(), new DbSizeProcessor(), new InfoProcessor(), new TypeProcessor());
+        super(new CommandProcessor2(), new PingProcessor(), new HelloWorldProcessor(), new ScanProcessor(), new GcProcessor(), new DbSizeProcessor(), new InfoProcessor(), new TypeProcessor(),new SaveProcessor());
     }
 
 

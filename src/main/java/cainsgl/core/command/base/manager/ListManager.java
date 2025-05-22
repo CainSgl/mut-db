@@ -5,37 +5,43 @@ import cainsgl.core.command.base.processor.list.*;
 import cainsgl.core.command.manager.shunt.ShuntCommandManager;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.data.key.ByteSuperKey;
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.data.value.ByteValue;
+import cainsgl.core.network.response.ElementResponse;
+import cainsgl.core.network.response.impl.BulkStringResponse;
+import cainsgl.core.storge.converter.Converter;
+import cainsgl.core.storge.converter.ConverterRegister;
+import cainsgl.core.storge.map.base.ConveterMapSerializer;
 
 import java.util.*;
 
-public class ListManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>>>
+public class ListManager extends ShuntCommandManager<Map<ByteSuperKey, LinkedList<TTL2Obj>>>
 {
     public ListManager()
     {
         super(new LpushProcessor(),new RpushProcessor(),new RpopProcessor(),new LpopProcessor(),new LrangeProcessor());
     }
 
-    public ListManager(List<Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>>> data)
+    public ListManager(List<Map<ByteSuperKey, LinkedList<TTL2Obj>>> data)
     {
         this();
-        for (Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> m : data)
+        for (Map<ByteSuperKey, LinkedList<TTL2Obj>> m : data)
         {
             map.putAll(m);
         }
     }
 
-    public Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> map = new HashMap<>();
+    public Map<ByteSuperKey, LinkedList<TTL2Obj>> map = new HashMap<>();
 
     @Override
-    public Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> separateImpl()
+    public Map<ByteSuperKey, LinkedList<TTL2Obj>> separateImpl()
     {
-        Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> result = new HashMap<>();
-        Iterator<Map.Entry<ByteSuperKey, TTLObj<LinkedList<ByteValue>>>> iterator = map.entrySet().iterator();
+        Map<ByteSuperKey, LinkedList<TTL2Obj>> result = new HashMap<>();
+        Iterator<Map.Entry<ByteSuperKey, LinkedList<TTL2Obj>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext())
         {
-            Map.Entry<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> next = iterator.next();
+            Map.Entry<ByteSuperKey, LinkedList<TTL2Obj>> next = iterator.next();
             ByteSuperKey key = next.getKey();
             if (!testKey(key.getBytes()))
             {
@@ -49,7 +55,18 @@ public class ListManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<Li
     }
 
     @Override
-    public void createImpl(List<Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>>> datas)
+    public List<ElementResponse> scanData()
+    {
+        List<ElementResponse> result = new ArrayList<>();
+        for (Map.Entry<ByteSuperKey, LinkedList<TTL2Obj>> entry : map.entrySet())
+        {
+            result.add(new BulkStringResponse(entry.getKey().getBytes()));
+        }
+        return result;
+    }
+
+    @Override
+    public void createImpl(List<Map<ByteSuperKey, LinkedList<TTL2Obj>>> datas)
     {
         new ListManager(datas);
     }
@@ -61,13 +78,13 @@ public class ListManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<Li
     }
 
     @Override
-    public void addData(Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> data)
+    public void addData(Map<ByteSuperKey, LinkedList<TTL2Obj>> data)
     {
         map.putAll(data);
     }
 
     @Override
-    public Map<ByteSuperKey, TTLObj<LinkedList<ByteValue>>> destoryImpl()
+    public Map<ByteSuperKey, LinkedList<TTL2Obj>> destoryImpl()
     {
         return map;
     }
@@ -81,7 +98,8 @@ public class ListManager extends ShuntCommandManager<Map<ByteSuperKey, TTLObj<Li
     @Override
     public byte[] serialization()
     {
-        return new byte[0];
+        // TTLObj<LinkedList<ByteValue>>
+       return new byte[]{1};
     }
 
     @Override

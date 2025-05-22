@@ -3,7 +3,8 @@ package cainsgl.core.network.server;
 import cainsgl.core.command.config.CommandConfiguration;
 import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.excepiton.MutServerStartException;
-import cainsgl.core.system.GcSystem;
+import cainsgl.core.storge.aof.AofFileExecutor;
+import cainsgl.core.storge.config.StorgeConfiguration;
 import cainsgl.core.system.Stopable;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.bootstrap.ServerBootstrap;
@@ -22,7 +23,13 @@ public class MutServer implements Stopable
 
     private void init(long startTime) throws Exception
     {
+        new StorgeConfiguration();
         new CommandConfiguration();
+        //在这里去执行所有的aof的内容
+        AofFileExecutor aofFileExecutor = new AofFileExecutor();
+        aofFileExecutor.execute();
+        aofFileExecutor.compressAofFiles();
+
 
         System.out.println("____                                                                                      ");
         System.out.println("        ,'  , `.                 ___      .--.--.                                                  ");

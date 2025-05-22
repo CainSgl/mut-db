@@ -8,38 +8,27 @@ import cainsgl.core.storge.converter.ConverterRegister;
 import cainsgl.core.system.GcSystem;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
-import jdk.jfr.Event;
 
 import java.io.*;
 import java.util.function.Consumer;
 
-@Deprecated
-public class TTLObj
+public class TTL2Obj
 {
-    //去序列化的时候只记录时间，wrapper通通记录为byteValue
-    public static class TTLObjConverter extends Converter<TTLObj>
+
+    public static class TTLObjConverter extends Converter<TTL2Obj>
     {
+        private static final Converter<ByteValue> INSTANCE = ConverterRegister.getConverter(ByteValue.class);
+
         @Override
-        public byte[] toBytes(TTLObj obj)
+        public byte[] toBytes(TTL2Obj obj)
         {
             try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                  DataOutputStream dataOut = new DataOutputStream(byteOut))
             {
-                // 1. 序列化过期时间
-                dataOut.writeLong(obj.expireTime);
-                // 2. 处理wrapper（统一转换为ByteValue）
-                //              Object wrapper = obj.wrapper;
-                //  if (wrapper == null)
-                //    {
-                // 写入空标记（0长度表示null）
-                //       dataOut.writeInt(0);
-                //      return byteOut.toByteArray();
-                //     }
-                // 3. 将wrapper转换为byte[]（通过其类型的转换器）
-                //         Converter wrapperConverter = ConverterRegister.getConverter(wrapper.getClass());
-                //      byte[] wrapperBytes = wrapperConverter.toBytes(wrapper);
-                ///      dataOut.writeInt(wrapperBytes.length);
-                //       dataOut.write(wrapperBytes);
+                dataOut.writeLong(obj.expireTime-GcSystem.updateTime);
+                byte[] bytes = obj.byteValue.getBytes();
+                dataOut.writeInt(bytes.length);
+                dataOut.write(bytes);
                 return byteOut.toByteArray();
             } catch (IOException e)
             {
@@ -48,24 +37,17 @@ public class TTLObj
         }
 
         @Override
-        public TTLObj fromBytes(byte[] bytes)
+        public TTL2Obj fromBytes(byte[] bytes)
         {
             try (ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
                  DataInputStream dataIn = new DataInputStream(byteIn))
             {
                 // 1. 读取过期时间
                 long expireTime = dataIn.readLong();
-                // 2. 读取ByteValue字节数据
-                //     int byteValueLen = dataIn.readInt();
-                //    if (byteValueLen == 0)
-                //   {
-                // 空值处理
-                //       return new TTLObj<>(null);
-                //    }
-                //     byte[] byteValueBytes = new byte[byteValueLen];
-                //    dataIn.readFully(byteValueBytes);
-                //     ByteValue byteValue = new ByteValue(byteValueBytes);
-                return new TTLObj(expireTime); // 需根据实际构造函数参数调整
+                int i = dataIn.readInt();
+                byte[] bytes1 = new byte[i];
+                dataIn.readFully(bytes1);
+                return new TTL2Obj(expireTime, new ByteValue(bytes1));
             } catch (IOException e)
             {
                 throw new RuntimeException("TTLObj deserialization failed", e);
@@ -73,47 +55,50 @@ public class TTLObj
         }
     }
 
-    private long expireTime;
-    private Consumer<TTLObj> consumer;
+
+    ByteValue byteValue;
     private CommandManager manager;
-    //  private final T wrapper;
-    boolean alawayNoDeCall;
+    // boolean alawayNoDeCall;
 
-//    public T getWrapper()
-//    {
-//        if (expireTime < 0)
-//        {
-//            //永不过期的
-//            return wrapper;
-//        }
-//        if (consumer == null)
-//        {
-//            //被执行了
-//            return null;
-//        }
-//        if (expireTime < GcSystem.updateTime)
-//        {
-//            consumer.accept(this);
-//            return null;
-//        }
-//        return wrapper;
-//    }
+    public ByteValue getWrapper()
+    {
+        if (expireTime < 0)
+        {
+            return byteValue;
+        }
+        if (byteValue == null)
+        {
+            return null;
+        }
+        if (expireTime < GcSystem.updateTime)
+        {
+            //过期了
+            consumer.accept(this);
+            this.byteValue = null;
+            return null;
+        }
+        return byteValue;
+    }
 
-    public void setManager(CommandManager manager)
+    public void setManager(CommandManager manager, Consumer<TTL2Obj> consumer)
     {
         this.manager = manager;
-        alawayNoDeCall = true;
+        this.consumer = consumer;
     }
 
-    private TTLObj(long expireTime)
+    long expireTime;
+
+    private TTL2Obj(long expireTime, ByteValue byteValue)
     {
         this.expireTime = expireTime;
-  //      this.wrapper = wrapper;
+        this.byteValue = byteValue;
     }
 
-    public TTLObj(long expireTime, CommandManager manager, Consumer<TTLObj> delCall)
+    private Consumer<TTL2Obj> consumer;
+
+    public TTL2Obj(long expireTime, ByteValue byteValue, CommandManager manager, Consumer<TTL2Obj> delCall)
     {
-    //    this.wrapper = wrapper;
+        //    this.wrapper = wrapper;
         if (expireTime < 0)
         {
             //永不过期
@@ -124,27 +109,34 @@ public class TTLObj
         {
             throw new NullPointerException("manager is null");
         }
+        this.byteValue = byteValue;
         this.manager = manager;
         this.consumer = delCall;
         this.expireTime = expireTime + GcSystem.updateTime;
-    //    GcSystem.register(this);
+        GcSystem.register(this);
     }
 
-//    public TTLObj(T wrapper)
-//    {
-//        this.expireTime = -1;
-//      //  this.wrapper = wrapper;
-//    }
-
-    public void setExpireTime(long expireTime)
+    public TTL2Obj(ByteValue byteValue)
     {
-        if (expireTime < 0)
+        this.expireTime = -1;
+        this.byteValue = byteValue;
+    }
+
+    public void setExpireTime(long e)
+    {
+        if (this.expireTime < 0)
         {
             throw new UnsupportedOperationException("这是一个未注册在内的ttlObj，不能修改");
         }
+        if (e < 0)
+        {
+            //改为永不过期对象
+            consumer=null;
+            return;
+        }
         long originTime = this.expireTime;
-        this.expireTime = expireTime + GcSystem.updateTime;
-    //    GcSystem.fixRegister(this, originTime);
+        this.expireTime = e + GcSystem.updateTime;
+        GcSystem.fixRegister(this, originTime);
     }
 
     public void increTime(long increTime)
@@ -155,7 +147,7 @@ public class TTLObj
         }
         long originTime = this.expireTime;
         this.expireTime = expireTime + increTime;
-     //   GcSystem.fixRegister(this, originTime);
+        GcSystem.fixRegister(this, originTime);
     }
 
     int index = -1;
@@ -194,6 +186,7 @@ public class TTLObj
         return time;
     }
 
+
     public void del()
     {
         if (consumer == null)
@@ -203,7 +196,6 @@ public class TTLObj
         EventLoop execute = ThreadManager.getLoopByManager(manager);
         if (execute == null)
         {
-            //manager没自己的线程，有可能是分流器的线程被销毁
             MutConfiguration.log.warn("manager no self thread,but it new a TTLObj");
             consumer.accept(this);
             return;
@@ -215,14 +207,49 @@ public class TTLObj
 
     public void clear()
     {
+        if (consumer == null)
+        {
+            //说明已经被清理了
+            return;
+        }
         consumer.accept(this);
         consumer = null;
     }
 
-    public void activate(CommandManager manager, Consumer<TTLObj> delCall)
+    public void activate(CommandManager manager, Consumer<TTL2Obj> delCall)
     {
+        if (this.expireTime < 0)
+        {
+            return;
+        }
+        this.expireTime=this.expireTime+ GcSystem.updateTime;
         this.manager = manager;
         this.consumer = delCall;
-      //  GcSystem.register(this);
+        GcSystem.register(this);
+    }
+    long stopTime;
+    public void await()
+    {
+        if(this.expireTime<0)
+        {
+            return;
+        }
+
+        stopTime=GcSystem.updateTime;
+        //调用他，直接变成永久的，后面再恢复
+        consumer=null;
+    }
+    public void recover(CommandManager manager,Consumer<TTL2Obj> delCall)
+    {
+        if(this.expireTime<0)
+        {
+            return;
+        }
+        //增加其中等待的时间
+        this.manager = manager;
+        this.consumer = delCall;
+        long originTime=this.expireTime;
+        this.expireTime=originTime+GcSystem.updateTime-stopTime;
+        GcSystem.fixRegister(this,originTime);
     }
 }

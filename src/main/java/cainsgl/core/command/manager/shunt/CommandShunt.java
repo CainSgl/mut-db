@@ -5,6 +5,7 @@ import cainsgl.core.config.MutConfiguration;
 import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.network.response.RESP2Response;
 import cainsgl.core.persistence.serializer.MutSerializable;
+import cainsgl.core.storge.aof.AofBuffer;
 import cainsgl.core.system.thread.ThreadManager;
 import cainsgl.core.utils.SerialiUtil;
 import io.netty.channel.EventLoop;
@@ -114,13 +115,23 @@ public class CommandShunt implements MutSerializable
         final CommandProcessor<ShuntCommandManager<?>> proxy;
         public final ShuntManagerProxy<?> manager;
         public final EventLoop eventLoop;
-
-        public CommandShuntComponent(ShuntManagerProxy<?> manager, CommandProcessor<ShuntCommandManager<?>> proxy, EventLoop e)
+        final AofBuffer aofBuffer;
+        public CommandShuntComponent(ShuntManagerProxy<?> manager, CommandProcessor<ShuntCommandManager<?>> proxy, EventLoop e,int index)
         {
             super(proxy.minCount(), proxy.maxCount(), proxy.commandName(), proxy.parameters());
             this.proxy = proxy;
             this.manager = manager;
             this.eventLoop = e;
+            AofBuffer aofBuffer1=null;
+            if(proxy.aof)
+            {
+                try{
+                    aofBuffer1 = new AofBuffer(proxy.commandName()+index);
+                }catch (Exception e2) {
+                    MutConfiguration.log.error("Could not create aofBuffer for command {}" , proxy.commandName(), e2);
+                }
+            }
+            aofBuffer = aofBuffer1;
         }
 
         public void shuntExecute(byte[][] args, Consumer<RESP2Response> consumer)
@@ -130,6 +141,10 @@ public class CommandShunt implements MutSerializable
                 try{
                     RESP2Response execute = proxy.execute(args, manager.proxy);
                     consumer.accept(execute);
+                    if(aofBuffer!=null)
+                    {
+                        aofBuffer.write(args);
+                    }
                 }catch (Exception e)
                 {
                     manager.exceptionCaught(e);
@@ -142,6 +157,12 @@ public class CommandShunt implements MutSerializable
         public RESP2Response execute(byte[][] args, ShuntCommandManager<?> manager)
         {
             throw new UnsupportedOperationException("不支持直接调用分流器的执行方法");
+        }
+
+        @Override
+        public void aof(byte[][] args)
+        {
+
         }
     }
 
@@ -246,7 +267,13 @@ public class CommandShunt implements MutSerializable
         public void deSerializer(byte[] data)
         {
             eventLoop.submit(() -> {
-                proxy.deSerializer(data);
+                try{
+                    proxy.deSerializer(data);
+                }catch (Exception e)
+                {
+                    proxy.exceptionCaught(e);
+                }
+
             });
         }
     }
@@ -260,7 +287,7 @@ public class CommandShunt implements MutSerializable
         for (int i = 0; i < proxy.length; i++)
         {
             processors[i] = new ArrayList<>();
-            processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop));
+            processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop,processors[0].size()));
             MutConfiguration.log.info("create the proxy for shunt,command: {}", proxy[i].commandName());
         }
 
@@ -378,7 +405,7 @@ public class CommandShunt implements MutSerializable
                     {
                         throw new RuntimeException("在再次构建manager的时候，你的processor的顺序与第一次不符合");
                     }
-                    processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop));
+                    processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop,processors[0].size()));
                 }
             } catch (ArrayIndexOutOfBoundsException e)
             {

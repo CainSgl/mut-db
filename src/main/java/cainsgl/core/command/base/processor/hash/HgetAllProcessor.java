@@ -4,6 +4,7 @@ import cainsgl.core.command.base.manager.HashManager;
 import cainsgl.core.command.processor.CommandProcessor;
 import cainsgl.core.data.key.ByteFastKey;
 import cainsgl.core.data.key.ByteSuperKey;
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.data.value.ByteValue;
 import cainsgl.core.network.response.ElementResponse;
@@ -27,12 +28,12 @@ public class HgetAllProcessor extends CommandProcessor<HashManager>
     public RESP2Response execute(byte[][] args, HashManager manager)
     {
         ByteSuperKey key = new ByteSuperKey(args[0]);
-        Map<ByteFastKey, TTLObj<ByteValue>> map2 = manager.map.get(key);
-        Iterator<Map.Entry<ByteFastKey, TTLObj<ByteValue>>> iterator = map2.entrySet().iterator();
+        Map<ByteFastKey, TTL2Obj> map2 = manager.map.get(key);
+        Iterator<Map.Entry<ByteFastKey,TTL2Obj>> iterator = map2.entrySet().iterator();
         List<ElementResponse> list = new ArrayList<>();
         while (iterator.hasNext())
         {
-            Map.Entry<ByteFastKey, TTLObj<ByteValue>> entry = iterator.next();
+            Map.Entry<ByteFastKey, TTL2Obj> entry = iterator.next();
             list.add(new BulkStringResponse(entry.getKey().getBytes()));
             ByteValue wrapper = entry.getValue().getWrapper();
             if (wrapper != null)

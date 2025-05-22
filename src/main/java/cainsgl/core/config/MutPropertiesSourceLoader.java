@@ -17,12 +17,13 @@ public class MutPropertiesSourceLoader
     public static final Logger log= LoggerFactory.getLogger(MutPropertiesSourceLoader.class);
 
     private static  MutPropertiesSourceLoader instance = new MutPropertiesSourceLoader();
-    private static int count=4;
+    private static int count=5;
     public static MutPropertiesSourceLoader getInstance()
     {
 
         if(count==0)
         {
+            MutConfiguration.log.error("不能再次获取MutPropertiesSourceLoader");
             throw new IllegalArgumentException("无法再次获取instance");
         }
         count--;

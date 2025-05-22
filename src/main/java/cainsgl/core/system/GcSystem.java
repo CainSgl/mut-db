@@ -1,6 +1,7 @@
 package cainsgl.core.system;
 
 import cainsgl.core.config.MutConfiguration;
+import cainsgl.core.data.ttl.TTL2Obj;
 import cainsgl.core.data.ttl.TTLObj;
 import cainsgl.core.system.thread.ThreadManager;
 import io.netty.channel.EventLoop;
@@ -52,7 +53,7 @@ public class GcSystem
 
     private static int lastChronology = 0;
 
-    public static void register(TTLObj ttlObj)
+    public static void register(TTL2Obj ttlObj)
     {
         MAIN_THEAD.submit(() -> {
             chronologies[lastChronology].register(ttlObj);
@@ -62,7 +63,7 @@ public class GcSystem
     }
 
     //不建议使用
-    public static void unRegister(TTLObj ttlObj)
+    public static void unRegister(TTL2Obj ttlObj)
     {
         MAIN_THEAD.submit(() -> {
             Chronology chronology = chronologies[ttlObj.getIndex()];
@@ -75,7 +76,7 @@ public class GcSystem
         });
     }
 
-    public static void fixRegister(TTLObj ttlObj,long originTime)
+    public static void fixRegister(TTL2Obj ttlObj,long originTime)
     {
 
         MAIN_THEAD.submit(() -> {
@@ -91,7 +92,7 @@ public class GcSystem
         final EventLoop eventLoop;
 
 
-        private final TreeSet<TTLObj>[] solts;
+        private final TreeSet<TTL2Obj>[] solts;
         private final int mask;
 
         public Chronology(EventLoop eventLoop)
@@ -104,7 +105,7 @@ public class GcSystem
             }
             solts = new TreeSet[MutConfiguration.GC.DEFAULT_SLOTS];
 
-            Comparator<TTLObj> comparator = Comparator.comparingLong(TTLObj::getExpire);
+            Comparator<TTL2Obj> comparator = Comparator.comparingLong(TTL2Obj::getExpire);
             for (int i = 0; i < solts.length; i++)
             {
                 solts[i] = new TreeSet<>(comparator);
@@ -117,7 +118,7 @@ public class GcSystem
         public void start()
         {
             eventLoop.scheduleAtFixedRate(() -> {
-                TreeSet<TTLObj> solt = solts[lastSlot];
+                TreeSet<TTL2Obj> solt = solts[lastSlot];
                 lastSlot = (lastSlot + 1) & mask;
                 while (true)
                 {
@@ -125,7 +126,7 @@ public class GcSystem
                     {
                         return;
                     }
-                    TTLObj first = solt.getFirst();
+                    TTL2Obj first = solt.getFirst();
                     if (first.getExpire() < updateTime)
                     {
                         //删除
@@ -140,7 +141,7 @@ public class GcSystem
             }, 0, MutConfiguration.GC.TICK_DURATION, TimeUnit.MILLISECONDS);
         }
 
-        public void reRegister(TTLObj ttlObj,long originTime)
+        public void reRegister(TTL2Obj ttlObj,long originTime)
         {
             eventLoop.submit(() -> {
                 ///删除原来的
@@ -153,7 +154,7 @@ public class GcSystem
             });
         }
 
-        public boolean unRegister(TTLObj ttlObj)
+        public boolean unRegister(TTL2Obj ttlObj)
         {
             try
             {
@@ -172,7 +173,7 @@ public class GcSystem
 
         }
 
-        public void register(TTLObj ttlObj)
+        public void register(TTL2Obj ttlObj)
         {
             eventLoop.submit(() -> {
                 ///根据ttlObj里的过期时间，来分配插槽

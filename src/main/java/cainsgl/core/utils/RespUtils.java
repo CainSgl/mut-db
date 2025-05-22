@@ -104,5 +104,38 @@ public class RespUtils
 
         return isNegative ? -result : result;
     }
-
+    public static byte[] longToAsciiBytes(long num) {
+        // 处理0的特殊情况
+        if (num == 0) {
+            return new byte[]{'0'};
+        }
+        // 处理特殊情况
+        if (num == Long.MIN_VALUE) {
+            return "-9223372036854775808".getBytes();
+        }
+        boolean isNegative = num < 0;
+        long absNum = isNegative ? -num : num;
+        // 计算数字的位数
+        int digitCount = 0;
+        long temp = absNum;
+        while (temp > 0) {
+            temp /= 10;
+            digitCount++;
+        }
+        int byteLength = isNegative ? digitCount + 1 : digitCount;
+        byte[] result = new byte[byteLength];
+        // 填充数字字符（从低位到高位，反向填充）
+        int position = byteLength - 1;
+        temp = absNum;
+        while (temp > 0) {
+            int digit = (int) (temp % 10);
+            result[position--] = (byte) ('0' + digit);
+            temp /= 10;
+        }
+        // 处理符号位
+        if (isNegative) {
+            result[0] = '-';
+        }
+        return result;
+    }
 }

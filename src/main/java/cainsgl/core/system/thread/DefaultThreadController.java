@@ -1,5 +1,6 @@
 package cainsgl.core.system.thread;
 
+import cainsgl.core.config.MutConfiguration;
 import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoop;
@@ -14,8 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultThreadController implements ThreadController
 {
     private static int fakeThreadsNum;
-    private final static List<EventLoop> THREAD_ARRAY = new ArrayList<>();
-    private final static List<EventLoopGroup> THREAD_GROUPS = new ArrayList<>();
+    private final static List<ThreadControllerEventLoop> THREAD_ARRAY = new ArrayList<>();
+    private final static List<ThreadControllerEventLoopGroup> THREAD_GROUPS = new ArrayList<>();
     //  private static Integer record = 0;
     private Integer singleIndex = 0;
     private Integer multiIndex = 0;
@@ -56,14 +57,18 @@ public class DefaultThreadController implements ThreadController
     @Override
     public synchronized EventLoop getEventLoop()
     {
-        if (fakeThreadsNum == 0)
+
+        if (fakeThreadsNum < 0)
         {
-            EventLoop eventExecutors = THREAD_ARRAY.get(singleIndex);
-            singleIndex++;
             singleIndex %= THREAD_ARRAY.size();
+            ThreadControllerEventLoop eventExecutors = THREAD_ARRAY.get(singleIndex);
+            eventExecutors.used.incrementAndGet();
+            singleIndex++;
+            MutConfiguration.log.info("无多余线程，给予重复的线程 {}",eventExecutors);
             return eventExecutors;
         }
         ThreadControllerEventLoop eventExecutors = new ThreadControllerEventLoop();
+        MutConfiguration.log.info("申请的线程id为 {}",eventExecutors);
         THREAD_ARRAY.add(eventExecutors);
         fakeThreadsNum--;
         return eventExecutors;
@@ -73,9 +78,11 @@ public class DefaultThreadController implements ThreadController
     public synchronized void backEventLoop(EventLoop eventLoop)
     {
         ThreadControllerEventLoop eventLoop1 = (ThreadControllerEventLoop) eventLoop;
+        MutConfiguration.log.info("归还线程id为{}的线程", eventLoop1);
         if (eventLoop1.used.decrementAndGet() == 0)
         {
             //销毁
+            MutConfiguration.log.info("销毁id为{}的线程", eventLoop1);
             THREAD_ARRAY.remove(eventLoop1);
             fakeThreadsNum++;
             eventLoop1.shutdownGracefully();
@@ -85,11 +92,11 @@ public class DefaultThreadController implements ThreadController
     @Override
     public synchronized EventLoopGroup getEventLoopGroup(int threadsNum)
     {
-        if (fakeThreadsNum == 0)
+        if (fakeThreadsNum < 0)
         {
+            multiIndex %= THREAD_ARRAY.size();
             EventLoopGroup eventExecutors = THREAD_GROUPS.get(multiIndex);
             multiIndex++;
-            multiIndex %= THREAD_ARRAY.size();
             return eventExecutors;
         }
         ThreadControllerEventLoopGroup eventExecutors = new ThreadControllerEventLoopGroup(threadsNum);

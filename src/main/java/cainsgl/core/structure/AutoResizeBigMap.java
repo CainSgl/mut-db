@@ -1,5 +1,7 @@
 package cainsgl.core.structure;
 
+import java.io.*;
+
 public class AutoResizeBigMap
 {
     private byte[] map;
@@ -243,5 +245,53 @@ public class AutoResizeBigMap
             }
         }
         return -1;  // 理论上不会到达（count>0时必然有元素）
+    }
+
+    public static class Converter extends cainsgl.core.storge.converter.Converter<AutoResizeBigMap>
+    {
+        @Override
+        public byte[] toBytes(AutoResizeBigMap obj) {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 DataOutputStream dos = new DataOutputStream(baos)) {
+                // 序列化基础字段
+                dos.writeInt(obj.minCapacity);   // 最小容量
+                dos.writeInt(obj.maxCapacity);   // 当前最大容量
+                dos.writeInt(obj.count);         // 元素数量
+                dos.writeInt(obj.maxId);         // 最大ID
+                dos.writeInt(obj.minId);         // 最小ID
+                // 序列化 map 数组（先写长度，再写内容）
+                dos.writeInt(obj.map.length);
+                dos.write(obj.map);
+                return baos.toByteArray();
+            } catch (IOException e) {
+                throw new RuntimeException("Serialization failed", e);
+            }
+        }
+
+        @Override
+        public AutoResizeBigMap fromBytes(byte[] bytes) {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                 DataInputStream dis = new DataInputStream(bais)) {
+                // 反序列化基础字段
+                int minCapacity = dis.readInt();
+                int maxCapacity = dis.readInt();
+                int count = dis.readInt();
+                int maxId = dis.readInt();
+                int minId = dis.readInt();
+                // 反序列化 map数组
+                int mapLength = dis.readInt();
+                byte[] map = new byte[mapLength];
+                dis.readFully(map);
+                // 创建新实例并通过反射注入字段
+                AutoResizeBigMap instance = new AutoResizeBigMap(maxCapacity, minCapacity);
+                instance.map=map;
+                instance.count=count;
+                instance.maxId=maxId;
+                instance.minId=minId;
+                return instance;
+            } catch (IOException e) {
+                throw new RuntimeException("Deserialization failed", e);
+            }
+        }
     }
 }
