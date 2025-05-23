@@ -24,9 +24,9 @@ public class ThreadManager
 
     static
     {
-        int cpuCores = Runtime.getRuntime().availableProcessors()*3/2;
+        int cpuCores = Runtime.getRuntime().availableProcessors()*2;
         int workThreads, gcThreads2;
-        gcThreads2 = workThreads = cpuCores / 4;
+        gcThreads2 = workThreads = cpuCores / 6;
         if (workThreads < 2)
         {
             workThreads = 2;

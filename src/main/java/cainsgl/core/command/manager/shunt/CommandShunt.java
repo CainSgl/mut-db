@@ -8,6 +8,7 @@ import cainsgl.core.persistence.serializer.MutSerializable;
 import cainsgl.core.storge.aof.AofBuffer;
 import cainsgl.core.system.thread.ThreadManager;
 import cainsgl.core.utils.SerialiUtil;
+import io.netty.channel.DefaultEventLoop;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.concurrent.Future;
@@ -281,13 +282,13 @@ public class CommandShunt implements MutSerializable
     public CommandShunt(ShuntCommandManager shuntCommandManager, CommandProcessor... proxy)
     {
         WORK_GROUP = ThreadManager.getEventLoopGroup(MutConfiguration.SHUNT_THREADS);
-        volumeThread = ThreadManager.getEventLoop();
+        volumeThread = new DefaultEventLoop();
         processors = new List[proxy.length];
         EventLoop eventLoop = ThreadManager.getEventLoop();
         for (int i = 0; i < proxy.length; i++)
         {
             processors[i] = new ArrayList<>();
-            processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop,processors[0].size()));
+            processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxy[i], eventLoop,0));
          //   MutConfiguration.log.info("create the proxy for shunt,command: {}", proxy[i].commandName());
         }
 
@@ -391,7 +392,7 @@ public class CommandShunt implements MutSerializable
                 return;
             } catch (Exception e)
             {
-              //  MutConfiguration.log.error("====>不期望的错误", e);
+                MutConfiguration.log.error("分流器====>不期望的错误", e);
             } finally
             {
                 isVolume = false;
@@ -406,6 +407,7 @@ public class CommandShunt implements MutSerializable
             EventLoop eventLoop = ThreadManager.getEventLoop();
             try
             {
+                int size = processors[0].size();
                 for (int i = 0; i < processors.length; i++)
                 {
                     if (proxys[i].minCount() < 1)
@@ -421,7 +423,7 @@ public class CommandShunt implements MutSerializable
                     {
                         throw new RuntimeException("在再次构建manager的时候，你的processor的顺序与第一次不符合");
                     }
-                    processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop,processors[0].size()));
+                    processors[i].add(new CommandShuntComponent(new ShuntManagerProxy(shuntCommandManager, eventLoop), proxys[i], eventLoop,size));
                 }
             } catch (ArrayIndexOutOfBoundsException e)
             {
