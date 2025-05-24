@@ -36,6 +36,12 @@ public class BigMapManager extends ExclusiveThreadManager implements MutSerializ
     }
 
     @Override
+    public void exceptionCaught(Exception e)
+    {
+        super.exceptionCaught(e);
+    }
+
+    @Override
     public void deSerializer(byte[] data)
     {
         try{
@@ -45,6 +51,7 @@ public class BigMapManager extends ExclusiveThreadManager implements MutSerializ
         }catch(Exception e){
             MutConfiguration.log.error("BigMap:Failed to deserialize map", e);
         }
+
 
     }
 }

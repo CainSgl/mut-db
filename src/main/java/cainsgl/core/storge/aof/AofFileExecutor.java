@@ -29,10 +29,12 @@ public class AofFileExecutor
                     MutConfiguration.log.info("execute command by aof {}", new String(aofCommand.methodName));
                 }, null);
             }
+         //   this.compressAofFiles();
         } catch (IOException e)
         {
             MutConfiguration.log.error("failed to read AOF file", e);
         }
+
     }
 
     public static class AofCommand

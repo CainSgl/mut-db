@@ -28,7 +28,7 @@ public class MutServer implements Stopable
         //在这里去执行所有的aof的内容
         AofFileExecutor aofFileExecutor = new AofFileExecutor();
         aofFileExecutor.execute();
-        aofFileExecutor.compressAofFiles();
+
 
 
         System.out.println("____                                                                                      ");

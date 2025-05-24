@@ -214,7 +214,7 @@ public class MutConfiguration
         // AOF执行的间隔时间
         public final static long INTERVAL_TIME;
         public final static int flushPolicy;
-        // AOF文件路径；暂时写死
+        // AOF文件路径
         public final static String FILE_NAME;
 
     }
